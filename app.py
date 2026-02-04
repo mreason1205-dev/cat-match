@@ -1,52 +1,46 @@
 import streamlit as st
-import random
 
 # ================= 1. 基础配置 =================
 st.set_page_config(
-    page_title="喵星人性格鉴定局 V4.0",
+    page_title="喵星人性格鉴定局",
     page_icon="🐱",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# ================= 2. 商业级 UI 样式 (保持清新风) =================
+# ================= 2. 纯净版 UI 样式 =================
 st.markdown("""
 <style>
+    /* 隐藏标头和页脚 */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
+    
+    /* 隐藏 Streamlit 红色按钮 */
+    .stDeployButton {display: none;}
+    [data-testid="stDecoration"] {display: none;}
+    [data-testid="stStatusWidget"] {display: none;}
 
+    /* 背景色 */
     .stApp {
         background-color: #f7f9fc;
     }
 
-    /* 进度条 */
+    /* 调整单选框样式，让它看起来更像卡片 */
+    .stRadio > div {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    
+    /* 进度条颜色 */
     .stProgress > div > div > div > div {
         background-image: linear-gradient(to right, #ff9a9e, #fad0c4);
     }
-
-    /* 选项按钮 */
-    .stButton > button {
-        background-color: white;
-        color: #4a4a4a;
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
-        padding: 15px 20px;
-        font-size: 16px;
-        width: 100%;
-        margin-bottom: 10px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        transition: all 0.2s;
-    }
-    .stButton > button:hover {
-        background-color: #fff0f5;
-        border-color: #ff9a9e;
-        color: #ff6b81;
-        transform: scale(1.01);
-    }
     
-    /* 结果页标签 */
-    .tag {
+    /* 标签样式 */
+    .tag-span {
         background-color: #e3f2fd;
         color: #1565c0;
         padding: 4px 10px;
@@ -56,29 +50,11 @@ st.markdown("""
         display: inline-block;
         margin-bottom: 5px;
     }
-
-    /* 次要结果卡片 */
-    .sub-card {
-        background-color: white;
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 10px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-    .sub-card img {
-        border-radius: 8px;
-        width: 60px;
-        height: 60px;
-        object-fit: cover;
-    }
 </style>
 """, unsafe_allow_html=True)
 
-# ================= 3. 核心数据 (15种猫) =================
-
+# ================= 3. 数据准备 =================
+# ⚠️ 请确保 images 文件夹里的图片文件名全是小写！
 CATS = {
     # --- 热门组 ---
     "Ragdoll": {
@@ -98,7 +74,7 @@ CATS = {
         "tags": ["#圆润", "#好脾气", "#招财体质"],
         "desc": "你就是人见人爱的金渐层！性格圆润（无论是身材还是脾气），非常讨喜。你心态超好，很少内耗，总能给身边的人带来福气和快乐。",
         "img": "images/jinjianceng.jpg"
-    }, # <--- 修复点：帮你加上了逗号，关好了门
+    },
     
     # --- 霸气/独立组 ---
     "MaineCoon":{
@@ -111,7 +87,7 @@ CATS = {
         "name": "中华战神·狸花猫",
         "tags": ["#智商超群", "#独立", "#业务能力强"],
         "desc": "你像狸花猫一样，独立、聪明、执行力极强。你不需要依附任何人，有极强的生存能力。在工作中你往往是那个能解决棘手问题的大神。",
-        "img": "images/lihuamao.jpg" # <--- 修复点：删掉了多余的 "img":
+        "img": "images/lihuamao.jpg"
     },
     "Jianzhou": {
         "name": "四耳神喵·简州猫",
@@ -145,19 +121,19 @@ CATS = {
         "name": "外星来客·无毛猫",
         "tags": ["#极度粘人", "#特立独行", "#体温高"],
         "desc": "你像无毛猫一样特立独行，不在乎世俗的眼光。虽然外表看起来很酷，但其实你内心非常火热，极度渴望亲密关系，是真正的“粘人精”。",
-        "img": "images/wumaomao.jpg" # <--- 修复点：修正了图片路径格式
+        "img": "images/wumaomao.jpg"
     },
     "Calico": {
         "name": "幸运女神·三花猫",
         "tags": ["#傲娇", "#聪明", "#猫中御姐"],
         "desc": "你像三花猫一样，多数时候聪明且独立。你非常有主见，不会随波逐流。你有点小傲娇，只有对你真正认可的人，才会展示柔软的一面。",
-        "img": "images/sanhuamao.jpg" # <--- 修复点：修正了图片路径格式
+        "img": "images/sanhuamao.jpg"
     },
     "Chinchilla": {
         "name": "精致名媛·金吉拉",
         "tags": ["#精致", "#有洁癖", "#小公主"],
         "desc": "你像金吉拉一样，生活精致，注重细节。你对环境的要求比较高，受不了一点脏乱差。你举止优雅，是朋友圈里最有品味的那个人。",
-        "img": "images/jinjila.jpg" # <--- 修复点：修正了图片路径格式
+        "img": "images/jinjila.jpg"
     },
     "Cow": {
         "name": "猫中二哈·奶牛猫",
@@ -177,21 +153,20 @@ CATS = {
         "desc": "你像美短加白（起司猫）一样，元气满满，乐观向上。你适应能力很强，无论遇到什么困难都能笑着面对。你的笑容很有感染力。",
         "img": "images/qisimao.jpg"
     }
-} # <--- 修复点：这里原来是大括号没对齐，现在帮你关好了！
+}
 
-# 4. 题库 (12道精准题，覆盖15种猫)
 QUESTIONS = [
     {
-        "q": "1. 周末早晨，你通常会？",
+        "q": " 周末早晨，你通常会？",
         "options": [
             {"txt": "睡到自然醒，赖床玩手机", "targets": ["GoldenShade", "Orange", "BlueCat", "SilverShade"]},
             {"txt": "早起运动/收拾屋子，精力充沛", "targets": ["DragonLi", "Jianzhou", "Cow", "DevonRex"]},
-            {"txt": "必须找人贴贴/聊天才能起床", "targets": ["Ragdoll", "Sphynx", "Siamese", "DevonRex"]},
+            {"txt": "必须找人贴贴/聊天才能起床", "targets": ["Ragdoll", "Sphynx", "Cheese", "DevonRex"]},
             {"txt": "按计划起床，做个精致早餐", "targets": ["Chinchilla", "MaineCoon", "Cheese", "BlueWhite"]}
         ]
     },
     {
-        "q": "2. 朋友突然放鸽子，你的反应是？",
+        "q": " 朋友突然放鸽子，你的反应是？",
         "options": [
             {"txt": "无所谓，刚好自己宅着", "targets": ["BlueCat", "Orange", "SilverShade"]},
             {"txt": "有点生气，需要哄", "targets": ["Calico", "Chinchilla", "Ragdoll"]},
@@ -200,7 +175,7 @@ QUESTIONS = [
         ]
     },
     {
-        "q": "3. 你更喜欢哪种穿衣风格？",
+        "q": " 你更喜欢哪种穿衣风格？",
         "options": [
             {"txt": "舒适宽松，怎么舒服怎么来", "targets": ["Orange", "GoldenShade", "BlueCat"]},
             {"txt": "精致优雅，注重搭配细节", "targets": ["Chinchilla", "SilverShade", "Ragdoll"]},
@@ -209,7 +184,7 @@ QUESTIONS = [
         ]
     },
     {
-        "q": "4. 在社交场合中，你是？",
+        "q": " 在社交场合中，你是？",
         "options": [
             {"txt": "全场焦点，社牛本牛", "targets": ["Cow", "DevonRex", "Orange"]},
             {"txt": "只跟熟人聊，生人勿近", "targets": ["Calico", "DragonLi", "SilverShade"]},
@@ -218,7 +193,7 @@ QUESTIONS = [
         ]
     },
     {
-        "q": "5. 遇到困难时，你会？",
+        "q": " 遇到困难时，你会？",
         "options": [
             {"txt": "找人撒娇求助，抱大腿", "targets": ["Ragdoll", "Sphynx", "Chinchilla"]},
             {"txt": "自己死磕，绝不认输", "targets": ["DragonLi", "Jianzhou", "MaineCoon"]},
@@ -227,7 +202,7 @@ QUESTIONS = [
         ]
     },
     {
-        "q": "6. 对于“粘人”这件事，你怎么看？",
+        "q": " 对于“粘人”这件事，你怎么看？",
         "options": [
             {"txt": "我是粘人精，分开一秒都难受", "targets": ["Sphynx", "Ragdoll", "DevonRex"]},
             {"txt": "看心情，想理你才理你", "targets": ["Calico", "SilverShade", "BlueCat"]},
@@ -236,7 +211,7 @@ QUESTIONS = [
         ]
     },
     {
-        "q": "7. 你的体型/身材管理观念是？",
+        "q": " 你的体型/身材管理观念是？",
         "options": [
             {"txt": "心宽体胖，能吃是福", "targets": ["Orange", "GoldenShade", "BlueCat"]},
             {"txt": "天生丽质，无需刻意管理", "targets": ["Ragdoll", "Chinchilla", "BlueWhite"]},
@@ -245,7 +220,7 @@ QUESTIONS = [
         ]
     },
     {
-        "q": "8. 你觉得自己像什么动物？",
+        "q": " 你觉得自己像什么动物？",
         "options": [
             {"txt": "狗狗 (忠诚、热情)", "targets": ["MaineCoon", "DevonRex", "Sphynx"]},
             {"txt": "老虎/狮子 (霸气、独立)", "targets": ["DragonLi", "Jianzhou", "Calico"]},
@@ -254,7 +229,7 @@ QUESTIONS = [
         ]
     },
     {
-        "q": "9. 你对生活环境的要求？",
+        "q": " 你对生活环境的要求？",
         "options": [
             {"txt": "必须干净整洁，有洁癖", "targets": ["Chinchilla", "SilverShade", "Calico"]},
             {"txt": "舒服就行，稍微乱点也没事", "targets": ["Orange", "GoldenShade", "Cheese"]},
@@ -263,7 +238,7 @@ QUESTIONS = [
         ]
     },
      {
-        "q": "10. 被人误解时，你会？",
+        "q": " 被人误解时，你会？",
         "options": [
             {"txt": "极力辩解，必须说清楚", "targets": ["DevonRex", "Sphynx", "Cow"]},
             {"txt": "懒得解释，爱咋咋地", "targets": ["DragonLi", "Calico", "SilverShade"]},
@@ -272,7 +247,7 @@ QUESTIONS = [
         ]
     },
     {
-        "q": "11. 你更喜欢哪种类型的伴侣？",
+        "q": " 你更喜欢哪种类型的伴侣？",
         "options": [
             {"txt": "能照顾我的，宠我的", "targets": ["Ragdoll", "Chinchilla", "Sphynx"]},
             {"txt": "势均力敌的，能一起进步的", "targets": ["DragonLi", "MaineCoon", "Jianzhou"]},
@@ -281,7 +256,7 @@ QUESTIONS = [
         ]
     },
     {
-        "q": "12. 最后一个问题，你最想要什么超能力？",
+        "q": " 最后一个问题，你最想要什么超能力？",
         "options": [
             {"txt": "读心术 (懂人心)", "targets": ["Ragdoll", "Calico", "SilverShade"]},
             {"txt": "瞬间移动 (自由)", "targets": ["DragonLi", "Jianzhou", "Cow"]},
@@ -294,17 +269,18 @@ QUESTIONS = [
 # ================= 4. 状态管理 =================
 if 'step' not in st.session_state:
     st.session_state.step = 0 
-if 'scores' not in st.session_state:
-    st.session_state.scores = {k: 0 for k in CATS.keys()}
 if 'q_index' not in st.session_state:
     st.session_state.q_index = 0
+# 记录用户的选择： key=题号(0-11), value=选项索引(0-3)
+if 'answers' not in st.session_state:
+    st.session_state.answers = {}
 
 # ================= 5. 页面逻辑 =================
 
 # --- 0. 激活页 ---
 if st.session_state.step == 0:
     st.markdown("<br>", unsafe_allow_html=True)
-    st.title("🐱 喵星人性格鉴定局 V4.0")
+    st.title("🐱 喵星人性格鉴定局")
     st.caption("全网最全 · 15大品种 · 精准画像")
     
     st.image("https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=800&q=80", use_column_width=True)
@@ -323,33 +299,79 @@ if st.session_state.step == 0:
         else:
             st.error("激活码是 CAT666 哦~")
 
-# --- 1. 答题页 ---
+# --- 1. 答题页 (支持上一题/下一题) ---
 elif st.session_state.step == 1:
-    current_q = st.session_state.q_index
-    q_data = QUESTIONS[current_q]
+    idx = st.session_state.q_index
+    q_data = QUESTIONS[idx]
     
-    progress = (current_q + 1) / len(QUESTIONS)
-    st.progress(progress, text=f"正在扫描灵魂... {current_q + 1}/{len(QUESTIONS)}")
+    # 顶部进度条
+    progress = (idx + 1) / len(QUESTIONS)
+    st.progress(progress, text=f"灵魂扫描中... {idx + 1}/{len(QUESTIONS)}")
     
-    st.markdown(f"### {q_data['q']}")
+    # 题目
+    st.markdown(f"### Q{idx+1}. {q_data['q']}")
     
-    for opt in q_data['options']:
-        if st.button(opt['txt']):
-            for cat_key in opt['targets']:
-                st.session_state.scores[cat_key] += 1
-            
-            if st.session_state.q_index < len(QUESTIONS) - 1:
-                st.session_state.q_index += 1
-            else:
-                st.session_state.step = 2
-            st.rerun()
+    # 获取当前题目的选项文本列表
+    options_list = [opt['txt'] for opt in q_data['options']]
+    
+    # 检查这一题之前是否选过，如果有，默认选中之前的答案
+    default_index = st.session_state.answers.get(idx, 0)
+    
+    # 核心交互：单选框
+    selected_option = st.radio(
+        "请选择:", 
+        options_list, 
+        index=default_index,
+        label_visibility="collapsed" # 隐藏"请选择"这几个字，更简洁
+    )
+    
+    # 找到用户选的是第几个选项
+    current_selection_index = options_list.index(selected_option)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
 
-# --- 2. 结果页 (Top 4 展示) ---
+    # 底部导航按钮
+    c1, c2, c3 = st.columns([1, 2, 1])
+    
+    with c1:
+        if idx > 0:
+            if st.button("⬅️ 上一题"):
+                st.session_state.q_index -= 1
+                st.rerun()
+                
+    with c3:
+        # 如果是最后一题，显示“查看结果”
+        if idx == len(QUESTIONS) - 1:
+            if st.button("查看结果 🚀", type="primary"):
+                # 记录最后一题的答案
+                st.session_state.answers[idx] = current_selection_index
+                st.session_state.step = 2
+                st.rerun()
+        else:
+            if st.button("下一题 ➡️", type="primary"):
+                # 记录当前题答案
+                st.session_state.answers[idx] = current_selection_index
+                st.session_state.q_index += 1
+                st.rerun()
+
+# --- 2. 结果页 (原生组件渲染，解决图片不显示问题) ---
 elif st.session_state.step == 2:
     st.balloons()
     
-    # 排序：按分数从高到低，拿出前 4 名
-    sorted_scores = sorted(st.session_state.scores.items(), key=lambda x: x[1], reverse=True)
+    # === 现场算分 ===
+    # 初始化分数
+    final_scores = {k: 0 for k in CATS.keys()}
+    
+    # 遍历每一道题的答案
+    for q_i, ans_i in st.session_state.answers.items():
+        # 找到这道题对应的 targets
+        targets = QUESTIONS[q_i]['options'][ans_i]['targets']
+        for cat_key in targets:
+            if cat_key in final_scores:
+                final_scores[cat_key] += 1
+
+    # 排序
+    sorted_scores = sorted(final_scores.items(), key=lambda x: x[1], reverse=True)
     top1_key = sorted_scores[0][0]
     top1_cat = CATS[top1_key]
     
@@ -357,12 +379,13 @@ elif st.session_state.step == 2:
     st.markdown("<center style='color:#888'>你的灵魂本命猫是</center>", unsafe_allow_html=True)
     st.markdown(f"<h1 style='text-align:center; color:#ff6b81; margin-top:-10px'>{top1_cat['name']}</h1>", unsafe_allow_html=True)
     
-    # ⚠️ 确保你的 images 文件夹里有这些图片，且名字完全一致！
+    # 主图 (使用 st.image 确保图片能显示)
     st.image(top1_cat['img'], use_column_width=True)
     
+    # 标签
     st.markdown(f"""
     <div style='text-align:center; margin-bottom:15px'>
-        {''.join([f'<span class="tag">{tag}</span>' for tag in top1_cat['tags']])}
+        {''.join([f'<span class="tag-span">{tag}</span>' for tag in top1_cat['tags']])}
     </div>
     """, unsafe_allow_html=True)
     
@@ -370,29 +393,32 @@ elif st.session_state.step == 2:
     
     # === 备选契合 (第2-4名) ===
     st.markdown("### 🧩 你的其他性格切片")
-    st.markdown("虽然你是那个品种，但有时候你也像它们...")
+    st.caption("虽然你是那个品种，但有时候你也像它们...")
     
-    for i in range(1, 4): # 取第2,3,4名
+    # 使用 Streamlit 原生布局替代 HTML img，解决图片不显示问题
+    for i in range(1, 4):
         key = sorted_scores[i][0]
         score = sorted_scores[i][1]
         cat = CATS[key]
-        
-        # 简单计算一个匹配度百分比
         match_rate = min(98, 70 + score * 3)
         
-        st.markdown(f"""
-        <div class="sub-card">
-            <img src="{cat['img']}">
-            <div style="flex:1">
-                <div style="font-weight:bold; font-size:16px">{cat['name']}</div>
-                <div style="font-size:12px; color:#666">潜在契合度: {match_rate}%</div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        # 容器卡片
+        with st.container(border=True):
+            col_img, col_txt = st.columns([1, 3])
+            
+            with col_img:
+                # 这里使用 st.image，它能完美处理本地路径
+                st.image(cat['img'], use_column_width=True)
+            
+            with col_txt:
+                st.subheader(cat['name'])
+                st.markdown(f"<span style='color:#666; font-size:14px'>潜在契合度: {match_rate}%</span>", unsafe_allow_html=True)
     
     st.markdown("---")
+    
+    # 重测按钮
     if st.button("🔄 重测"):
         st.session_state.step = 0
-        st.session_state.scores = {k: 0 for k in CATS.keys()}
+        st.session_state.answers = {}
         st.session_state.q_index = 0
         st.rerun()
