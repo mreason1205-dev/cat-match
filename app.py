@@ -2,207 +2,266 @@ import streamlit as st
 
 # ================= 1. 基础配置 =================
 st.set_page_config(
-    page_title="喵星人性格鉴定局",
-    page_icon="🐱",
+    page_title="如果你的前世是一只小猫",
+    page_icon="🐾",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# ================= 2. 纯净版 UI 样式 =================
+# ================= 2. “城市测评”同款 UI 样式 =================
 st.markdown("""
 <style>
-    /* 隐藏标头和页脚 */
+    /* 1. 全局去噪 */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-    
-    /* 隐藏 Streamlit 红色按钮 */
     .stDeployButton {display: none;}
     [data-testid="stDecoration"] {display: none;}
     [data-testid="stStatusWidget"] {display: none;}
-
-    /* 背景色 */
+    
+    /* 2. 背景色调整 (淡雅灰蓝，突出中间卡片) */
     .stApp {
-        background-color: #f7f9fc;
+        background-color: #f0f4f8;
+        background-image: linear-gradient(180deg, #f0f4f8 0%, #eef2f6 100%);
     }
 
-    /* 调整单选框样式，让它看起来更像卡片 */
+    /* 3. 核心容器：白色卡片效果 */
+    .main-card {
+        background-color: #ffffff;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    /* 4. 单选框变身：参考图04的选项条样式 */
     .stRadio > div {
-        background-color: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        gap: 12px;
     }
-    
-    /* 进度条颜色 */
-    .stProgress > div > div > div > div {
-        background-image: linear-gradient(to right, #ff9a9e, #fad0c4);
-    }
-    
-    /* 标签样式 */
-    .tag-span {
-        background-color: #e3f2fd;
-        color: #1565c0;
-        padding: 4px 10px;
+    .stRadio > div > label {
+        background-color: #f8f9fa; /* 浅灰背景 */
+        padding: 18px 20px;
         border-radius: 12px;
-        font-size: 13px;
-        margin-right: 5px;
-        display: inline-block;
-        margin-bottom: 5px;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+    /* 鼠标悬停效果 */
+    .stRadio > div > label:hover {
+        background-color: #ffffff;
+        border-color: #8ec5fc; /* 悬停时显示淡蓝边框 */
+        box-shadow: 0 4px 12px rgba(142, 197, 252, 0.2);
+        transform: translateY(-2px);
+    }
+    /* 选中状态的高亮 (Streamlit 内部比较难完全定制 radio 选中态，但可以用 CSS 优化文字) */
+    .stRadio > div > label[data-baseweb="radio"] > div:first-child {
+        margin-right: 15px;
+    }
+    
+    /* 5. 进度条美化 (参考图04顶部) */
+    .stProgress > div > div > div > div {
+        background-image: linear-gradient(90deg, #a1c4fd 0%, #c2e9fb 100%);
+        height: 10px;
+        border-radius: 5px;
+    }
+    
+    /* 6. 按钮美化：区分“上一题”和“下一题” */
+    /* 普通按钮 (上一题) */
+    button[kind="secondary"] {
+        background-color: #f1f3f5;
+        color: #495057;
+        border: none;
+        border-radius: 25px;
+        padding: 10px 25px;
+        font-weight: bold;
+    }
+    /* 重点按钮 (下一题/开始/结果) */
+    button[kind="primary"] {
+        background: linear-gradient(90deg, #8fd3f4 0%, #84fab0 100%);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        padding: 10px 30px;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(132, 250, 176, 0.4);
+        transition: all 0.3s;
+    }
+    button[kind="primary"]:hover {
+        transform: scale(1.02);
+        box-shadow: 0 6px 20px rgba(132, 250, 176, 0.6);
+    }
+
+    /* 7. 字体排版优化 */
+    h1, h2, h3 {
+        font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: #2c3e50;
+    }
+    .question-text {
+        font-size: 20px;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 25px;
+        line-height: 1.5;
+    }
+    
+    /* 8. 结果页大数字 */
+    .big-score {
+        font-size: 48px;
+        font-weight: 800;
+        color: #8fd3f4; /* 主题色 */
+        text-align: center;
+        margin: 10px 0;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# ================= 3. 数据准备 =================
-# ⚠️ 请确保 images 文件夹里的图片文件名全是小写！
+# ================= 3. 数据准备 (图片名需全小写) =================
 CATS = {
-    # --- 热门组 ---
     "Ragdoll": {
-        "name": "仙女本仙·布偶猫",
+        "name": "布偶猫 (Ragdoll)",
         "tags": ["#粘人精", "#颜值天花板", "#玻璃心"],
-        "desc": "你像布偶猫一样，拥有极高的共情能力和温柔的内心。你非常重感情，愿意为了喜欢的人付出一切。虽然偶尔会因为敏感而感到委屈，但你的温柔是治愈世界的良药。",
+        "desc": "你的灵魂柔软而细腻，像布偶猫一样，天生拥有极高的共情能力。你渴望被坚定地选择，愿意为了爱的人收起爪子。虽然偶尔会因为敏感而感到委屈，但你的温柔，是治愈这个世界最强大的力量。",
         "img": "images/buoumao.jpg"
     },
     "SilverShade": {
-        "name": "优雅贵族·银渐层",
-        "tags": ["#优雅", "#小脾气", "#颜值正义"],
-        "desc": "你像银渐层一样，自带一种优雅的贵族气质。你性格温和但有原则，不会随意对人敞开心扉，但一旦接纳了对方，就会变得非常可爱。",
+        "name": "银渐层 (Silver Shade)",
+        "tags": ["#优雅贵族", "#有点小脾气", "#颜值正义"],
+        "desc": "你自带一种与生俱来的优雅气质，像银渐层一样，既不刻意讨好，也不过分疏离。你心里有一杆秤，谁对你好你心里门儿清。虽然偶尔会耍点小性子，但那正是你可爱的个性所在。",
         "img": "images/yinjianceng.jpg"
     },
     "GoldenShade": {
-        "name": "人间富贵花·金渐层",
-        "tags": ["#圆润", "#好脾气", "#招财体质"],
-        "desc": "你就是人见人爱的金渐层！性格圆润（无论是身材还是脾气），非常讨喜。你心态超好，很少内耗，总能给身边的人带来福气和快乐。",
+        "name": "金渐层 (Golden Shade)",
+        "tags": ["#人间富贵花", "#心态超稳", "#招财体质"],
+        "desc": "你就是大家眼中的“小福星”！像金渐层一样，性格圆润，心态超稳。你很少为了不值得的小事内耗，懂得享受生活。你这种松弛感，总能给身边的人带来好运和快乐。",
         "img": "images/jinjianceng.jpg"
     },
-    
-    # --- 霸气/独立组 ---
     "MaineCoon":{
-        "name": "温柔巨人·缅因猫",
-        "tags": ["#安全感", "#外冷内热", "#忠诚"],
-        "desc": "你拥有强大的气场，像缅因猫一样给人十足的安全感。外表可能看起来有点高冷或霸气，但内心其实住着一个小公举，对认定的人极度温柔忠诚。",
+        "name": "缅因猫 (Maine Coon)",
+        "tags": ["#温柔巨人", "#安全感爆棚", "#外冷内热"],
+        "desc": "你的气场很强，像缅因猫一样给人十足的安全感。不熟悉的人觉得你高冷，但其实你内心住着一个小公主/小王子，对认定的人极度忠诚和温柔。你是那个能扛事儿的守护者。",
         "img": "images/mianyinmao.jpg"
     },
     "DragonLi": {
-        "name": "中华战神·狸花猫",
-        "tags": ["#智商超群", "#独立", "#业务能力强"],
-        "desc": "你像狸花猫一样，独立、聪明、执行力极强。你不需要依附任何人，有极强的生存能力。在工作中你往往是那个能解决棘手问题的大神。",
+        "name": "狸花猫 (Dragon Li)",
+        "tags": ["#智商天花板", "#独立酷飒", "#业务能力强"],
+        "desc": "如果前世是猫，你一定是那只统领街头的狸花猫。你独立、聪明、执行力极强，不需要依附任何人。在工作中你往往是那个能解决棘手问题的大神，在这个复杂的世界里活得游刃有余。",
         "img": "images/lihuamao.jpg"
     },
     "Jianzhou": {
-        "name": "四耳神喵·简州猫",
-        "tags": ["#狩猎者", "#低调", "#强悍"],
-        "desc": "你像传说中的简州猫一样，低调而强悍。你平时不显山不露水，但关键时刻爆发力惊人。你非常务实，不喜欢花里胡哨的东西，是典型的实干家。",
+        "name": "简州猫 (Jianzhou)",
+        "tags": ["#低调狩猎者", "#强悍实干", "#不服输"],
+        "desc": "你像传说中的简州猫一样，低调而强悍。你平时不显山不露水，但关键时刻爆发力惊人。你非常务实，不喜欢花里胡哨的东西，是典型的实干家，认定的目标绝不轻易放弃。",
         "img": "images/jianzhoumao.jpg"
     },
-
-    # --- 英短家族 ---
     "BlueWhite": {
-        "name": "甜美正太·英短蓝白",
-        "tags": ["#好奇宝宝", "#尴尬期尴尬", "#活泼"],
-        "desc": "你像蓝白一样，性格活泼开朗，总是对世界充满好奇。你有点小淘气，但因为长得可爱，总能被原谅。你是大家眼中的开心果。",
+        "name": "英短蓝白 (Blue Bicolor)",
+        "tags": ["#永远的少年", "#好奇宝宝", "#乐天派"],
+        "desc": "你的灵魂里住着一个长不大的孩子，像蓝白一样，永远对世界充满好奇。你有点小淘气，但因为长得可爱、性格开朗，总能被大家原谅。你是朋友圈里的开心果，有你在就不会冷场。",
         "img": "images/yingduanlanbai.jpg"
     },
     "BlueCat": {
-        "name": "蓝胖子·英短蓝猫",
-        "tags": ["#憨厚", "#记仇", "#尤其是吃"],
-        "desc": "你像蓝猫一样，给人一种憨厚老实的感觉。你性格稳重，不容易生气（除非抢你的吃的）。你比较慢热，喜欢安稳的生活节奏。",
+        "name": "英短蓝猫 (British Blue)",
+        "tags": ["#憨厚老实", "#记仇本仇", "#稳重"],
+        "desc": "你像蓝猫一样，给人一种憨厚老实、非常靠谱的感觉。你性格稳重，不容易生气（除非抢了你的吃的）。你比较慢热，不喜欢变动，喜欢安稳、有秩序的生活节奏。",
         "img": "images/yingduanlanmao.jpg"
     },
-
-    # --- 特色组 ---
     "Orange": {
-        "name": "以大橘为重·橘猫",
-        "tags": ["#干饭王", "#心宽体胖", "#社交牛逼症"],
-        "desc": "格局打开！你像大橘一样，心胸宽广，凡事不往心里去。你极具亲和力，朋友遍天下。虽然偶尔想躺平，但对生活的热爱从未减少。",
+        "name": "橘猫 (Orange Tabby)",
+        "tags": ["#以大橘为重", "#社交悍匪", "#心宽体胖"],
+        "desc": "格局打开！你像大橘一样，心胸宽广，凡事不往心里去。你极具亲和力，朋友遍天下。虽然偶尔想躺平，但对生活的热爱从未减少。你是那种能吃得下饭、睡得着觉的有福之人。",
         "img": "images/jumao.jpg"
     },
     "Sphynx": {
-        "name": "外星来客·无毛猫",
-        "tags": ["#极度粘人", "#特立独行", "#体温高"],
-        "desc": "你像无毛猫一样特立独行，不在乎世俗的眼光。虽然外表看起来很酷，但其实你内心非常火热，极度渴望亲密关系，是真正的“粘人精”。",
+        "name": "无毛猫 (Sphynx)",
+        "tags": ["#极度粘人", "#特立独行", "#内心火热"],
+        "desc": "你像无毛猫一样特立独行，不在乎世俗的眼光。虽然外表看起来很酷、很独特，但其实你内心非常火热，极度渴望亲密关系，对爱人有着毫无保留的依赖。",
         "img": "images/wumaomao.jpg"
     },
     "Calico": {
-        "name": "幸运女神·三花猫",
-        "tags": ["#傲娇", "#聪明", "#猫中御姐"],
-        "desc": "你像三花猫一样，多数时候聪明且独立。你非常有主见，不会随波逐流。你有点小傲娇，只有对你真正认可的人，才会展示柔软的一面。",
+        "name": "三花猫 (Calico)",
+        "tags": ["#傲娇御姐", "#双商在线", "#看心情"],
+        "desc": "你像三花猫一样，多数时候聪明且独立。你非常有主见，不会随波逐流。你有点小傲娇，只有对你真正认可的人，才会展示柔软的一面。你的爱是稀缺资源，给谁谁珍惜。",
         "img": "images/sanhuamao.jpg"
     },
     "Chinchilla": {
-        "name": "精致名媛·金吉拉",
-        "tags": ["#精致", "#有洁癖", "#小公主"],
-        "desc": "你像金吉拉一样，生活精致，注重细节。你对环境的要求比较高，受不了一点脏乱差。你举止优雅，是朋友圈里最有品味的那个人。",
+        "name": "金吉拉 (Chinchilla)",
+        "tags": ["#精致名媛", "#有洁癖", "#小公主"],
+        "desc": "你像金吉拉一样，生活精致，注重细节和仪式感。你对环境的要求比较高，受不了一点脏乱差。你举止优雅，审美在线，是朋友圈里最有品味的那个人。",
         "img": "images/jinjila.jpg"
     },
     "Cow": {
-        "name": "猫中二哈·奶牛猫",
-        "tags": ["#神经质", "#精力过剩", "#搞笑女/男"],
-        "desc": "你是独一无二的奶牛猫！脑回路清奇，经常做一些让人意想不到的事。你精力旺盛，是大家的快乐源泉。有你在，生活永远不会无聊。",
+        "name": "奶牛猫 (Tuxedo)",
+        "tags": ["#猫中二哈", "#精力过剩", "#脑回路清奇"],
+        "desc": "你是独一无二的奶牛猫！脑回路清奇，经常做一些让人意想不到的事。你精力旺盛，是大家的快乐源泉。有你在，生活永远不会无聊，你总能发现生活中的奇奇怪怪和可可爱爱。",
         "img": "images/nainiumao.jpg"
     },
     "DevonRex": {
-        "name": "落入凡间的小精灵·德文",
-        "tags": ["#机灵", "#像狗一样", "#古灵精怪"],
-        "desc": "你像德文卷毛猫一样，聪明机灵，反应极快。你性格像小狗一样热情，喜欢跟人互动。你古灵精怪，总能发现生活中的小乐趣。",
+        "name": "德文卷毛猫 (Devon Rex)",
+        "tags": ["#机灵小狗", "#古灵精怪", "#反应快"],
+        "desc": "你像德文卷毛猫一样，聪明机灵，反应极快。你性格像小狗一样热情，喜欢跟人互动，根本闲不下来。你古灵精怪，总能发现生活中的小乐趣，是大家的“小机灵鬼”。",
         "img": "images/dewenmao.jpg"
     },
     "Cheese": {
-        "name": "甜心宝贝·起司猫",
-        "tags": ["#元气", "#随和", "#乐天派"],
-        "desc": "你像美短加白（起司猫）一样，元气满满，乐观向上。你适应能力很强，无论遇到什么困难都能笑着面对。你的笑容很有感染力。",
+        "name": "起司猫 (Tabby & White)",
+        "tags": ["#元气甜心", "#随和", "#适应力强"],
+        "desc": "你像起司猫一样，元气满满，乐观向上。你适应能力很强，无论遇到什么困难都能笑着面对。你的笑容很有感染力，就像冬日里的暖阳，让人忍不住想靠近。",
         "img": "images/qisimao.jpg"
     }
 }
 
+# 4. 题库 (前三题已重制，更具猫咪本能感)
 QUESTIONS = [
     {
-        "q": " 周末早晨，你通常会？",
+        "q": "如果你的前世是只猫，当家里突然来了陌生客人，你会？", 
         "options": [
-            {"txt": "睡到自然醒，赖床玩手机", "targets": ["GoldenShade", "Orange", "BlueCat", "SilverShade"]},
-            {"txt": "早起运动/收拾屋子，精力充沛", "targets": ["DragonLi", "Jianzhou", "Cow", "DevonRex"]},
-            {"txt": "必须找人贴贴/聊天才能起床", "targets": ["Ragdoll", "Sphynx", "Cheese", "DevonRex"]},
-            {"txt": "按计划起床，做个精致早餐", "targets": ["Chinchilla", "MaineCoon", "Cheese", "BlueWhite"]}
+            {"txt": "好奇地凑过去闻一闻，蹭蹭裤腿", "targets": ["Orange", "GoldenShade", "Cow", "DevonRex", "Cheese"]},
+            {"txt": "在远处高冷观察，敌不动我不动", "targets": ["DragonLi", "SilverShade", "Calico", "MaineCoon", "Jianzhou"]},
+            {"txt": "吓得立刻钻进沙发底或床底，看不见我", "targets": ["Ragdoll", "Sphynx", "BlueCat", "Chinchilla"]},
+            {"txt": "完全无视，继续睡我的大觉", "targets": ["BlueWhite", "Orange", "BlueCat"]}
         ]
     },
     {
-        "q": " 朋友突然放鸽子，你的反应是？",
+        "q": "当你看到窗外飞过一只小鸟，你的本能反应是？",
         "options": [
-            {"txt": "无所谓，刚好自己宅着", "targets": ["BlueCat", "Orange", "SilverShade"]},
-            {"txt": "有点生气，需要哄", "targets": ["Calico", "Chinchilla", "Ragdoll"]},
-            {"txt": "立刻改约别人，绝不浪费时间", "targets": ["DragonLi", "Jianzhou", "Cow"]},
-            {"txt": "正好去做自己想做的事，很独立", "targets": ["MaineCoon", "Cheese", "BlueWhite"]}
+            {"txt": "发出“咔咔咔”的声音，激动地想抓", "targets": ["DragonLi", "Jianzhou", "Cow", "DevonRex", "MaineCoon"]},
+            {"txt": "静静地欣赏，思考猫生", "targets": ["SilverShade", "Chinchilla", "Ragdoll", "BlueCat"]},
+            {"txt": "没啥反应，不如碗里的罐头有吸引力", "targets": ["Orange", "GoldenShade", "BlueWhite"]},
+            {"txt": "试图打开窗户跟它聊聊", "targets": ["Sphynx", "Cheese", "Calico"]}
         ]
     },
     {
-        "q": " 你更喜欢哪种穿衣风格？",
+        "q": "如果你要向主人表达爱意，你更倾向于？",
         "options": [
-            {"txt": "舒适宽松，怎么舒服怎么来", "targets": ["Orange", "GoldenShade", "BlueCat"]},
-            {"txt": "精致优雅，注重搭配细节", "targets": ["Chinchilla", "SilverShade", "Ragdoll"]},
-            {"txt": "个性潮牌，与众不同", "targets": ["Sphynx", "Cow", "DevonRex"]},
-            {"txt": "简约干练，方便活动", "targets": ["DragonLi", "Jianzhou", "MaineCoon"]}
+            {"txt": "直接一屁股坐在他/她脸上，贴贴！", "targets": ["Ragdoll", "Sphynx", "DevonRex", "Cheese"]},
+            {"txt": "叼一只蟑螂/老鼠送给他（这是礼物！）", "targets": ["DragonLi", "Jianzhou", "Cow", "MaineCoon"]},
+            {"txt": "在他工作时，默默趴在旁边陪伴", "targets": ["GoldenShade", "BlueCat", "SilverShade", "BlueWhite"]},
+            {"txt": "允许他摸我两下，这就是最大的恩赐了", "targets": ["Calico", "Chinchilla", "SilverShade"]}
         ]
     },
     {
-        "q": " 在社交场合中，你是？",
+        "q": "在社交场合中，你通常是？",
         "options": [
-            {"txt": "全场焦点，社牛本牛", "targets": ["Cow", "DevonRex", "Orange"]},
-            {"txt": "只跟熟人聊，生人勿近", "targets": ["Calico", "DragonLi", "SilverShade"]},
+            {"txt": "全场焦点，社牛本牛 (E人)", "targets": ["Cow", "DevonRex", "Orange", "Cheese"]},
+            {"txt": "只跟熟人聊，生人勿近 (I人)", "targets": ["Calico", "DragonLi", "SilverShade", "Russian"]},
             {"txt": "温和的倾听者，微笑回应", "targets": ["GoldenShade", "BlueCat", "Ragdoll"]},
-            {"txt": "游刃有余，照顾每个人的感受", "targets": ["MaineCoon", "Cheese", "BlueWhite"]}
+            {"txt": "游刃有余，照顾每个人的感受", "targets": ["MaineCoon", "BlueWhite"]}
         ]
     },
     {
-        "q": " 遇到困难时，你会？",
+        "q": "遇到困难和压力时，你会？",
         "options": [
-            {"txt": "找人撒娇求助，抱大腿", "targets": ["Ragdoll", "Sphynx", "Chinchilla"]},
+            {"txt": "找人撒娇求助，求抱抱", "targets": ["Ragdoll", "Sphynx", "Chinchilla"]},
             {"txt": "自己死磕，绝不认输", "targets": ["DragonLi", "Jianzhou", "MaineCoon"]},
-            {"txt": "先吃顿好的，明天再说", "targets": ["Orange", "GoldenShade", "BlueCat"]},
+            {"txt": "先吃顿好的，睡一觉再说", "targets": ["Orange", "GoldenShade", "BlueCat"]},
             {"txt": "另辟蹊径，用奇怪的方法解决", "targets": ["Cow", "DevonRex", "Cheese"]}
         ]
     },
     {
-        "q": " 对于“粘人”这件事，你怎么看？",
+        "q": "对于“粘人”这件事，你怎么看？",
         "options": [
             {"txt": "我是粘人精，分开一秒都难受", "targets": ["Sphynx", "Ragdoll", "DevonRex"]},
             {"txt": "看心情，想理你才理你", "targets": ["Calico", "SilverShade", "BlueCat"]},
@@ -211,7 +270,7 @@ QUESTIONS = [
         ]
     },
     {
-        "q": " 你的体型/身材管理观念是？",
+        "q": "你的身材管理观念是？",
         "options": [
             {"txt": "心宽体胖，能吃是福", "targets": ["Orange", "GoldenShade", "BlueCat"]},
             {"txt": "天生丽质，无需刻意管理", "targets": ["Ragdoll", "Chinchilla", "BlueWhite"]},
@@ -220,7 +279,7 @@ QUESTIONS = [
         ]
     },
     {
-        "q": " 你觉得自己像什么动物？",
+        "q": "你觉得自己像什么动物？",
         "options": [
             {"txt": "狗狗 (忠诚、热情)", "targets": ["MaineCoon", "DevonRex", "Sphynx"]},
             {"txt": "老虎/狮子 (霸气、独立)", "targets": ["DragonLi", "Jianzhou", "Calico"]},
@@ -229,7 +288,7 @@ QUESTIONS = [
         ]
     },
     {
-        "q": " 你对生活环境的要求？",
+        "q": "你对生活环境的要求？",
         "options": [
             {"txt": "必须干净整洁，有洁癖", "targets": ["Chinchilla", "SilverShade", "Calico"]},
             {"txt": "舒服就行，稍微乱点也没事", "targets": ["Orange", "GoldenShade", "Cheese"]},
@@ -238,7 +297,7 @@ QUESTIONS = [
         ]
     },
      {
-        "q": " 被人误解时，你会？",
+        "q": "被人误解时，你会？",
         "options": [
             {"txt": "极力辩解，必须说清楚", "targets": ["DevonRex", "Sphynx", "Cow"]},
             {"txt": "懒得解释，爱咋咋地", "targets": ["DragonLi", "Calico", "SilverShade"]},
@@ -247,7 +306,7 @@ QUESTIONS = [
         ]
     },
     {
-        "q": " 你更喜欢哪种类型的伴侣？",
+        "q": "你更喜欢哪种类型的伴侣？",
         "options": [
             {"txt": "能照顾我的，宠我的", "targets": ["Ragdoll", "Chinchilla", "Sphynx"]},
             {"txt": "势均力敌的，能一起进步的", "targets": ["DragonLi", "MaineCoon", "Jianzhou"]},
@@ -256,7 +315,7 @@ QUESTIONS = [
         ]
     },
     {
-        "q": " 最后一个问题，你最想要什么超能力？",
+        "q": "最后一个问题，你最想要什么超能力？",
         "options": [
             {"txt": "读心术 (懂人心)", "targets": ["Ragdoll", "Calico", "SilverShade"]},
             {"txt": "瞬间移动 (自由)", "targets": ["DragonLi", "Jianzhou", "Cow"]},
@@ -271,26 +330,31 @@ if 'step' not in st.session_state:
     st.session_state.step = 0 
 if 'q_index' not in st.session_state:
     st.session_state.q_index = 0
-# 记录用户的选择： key=题号(0-11), value=选项索引(0-3)
 if 'answers' not in st.session_state:
     st.session_state.answers = {}
 
 # ================= 5. 页面逻辑 =================
 
-# --- 0. 激活页 ---
+# --- 0. 激活页 (封面升级) ---
 if st.session_state.step == 0:
     st.markdown("<br>", unsafe_allow_html=True)
-    st.title("🐱 喵星人性格鉴定局")
-    st.caption("全网最全 · 15大品种 · 精准画像")
+    # 标题
+    st.markdown("<h1 style='text-align: center; color: #2c3e50;'>🔮 如果你的前世是一只小猫</h1>", unsafe_allow_html=True)
+    st.caption("全网最火 · 灵魂品种测试 · 你的本能反应")
     
-    st.image("https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=800&q=80", use_column_width=True)
+    # 封面图 (可替换)
+    st.image("https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800&q=80", use_column_width=True)
     
     st.markdown("---")
+    
+    # 开始区域放在一个卡片里
+    st.markdown('<div class="main-card">', unsafe_allow_html=True)
     col1, col2 = st.columns([3, 1])
     with col1:
-        code = st.text_input("激活码", placeholder="CAT666", label_visibility="collapsed")
+        code = st.text_input("请输入激活码", placeholder="CAT666", label_visibility="collapsed")
     with col2:
-        start_btn = st.button("🚀 开始")
+        start_btn = st.button("开始唤醒 ⚡", type="primary", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
     
     if start_btn:
         if code == "CAT666":
@@ -299,125 +363,122 @@ if st.session_state.step == 0:
         else:
             st.error("激活码是 CAT666 哦~")
 
-# --- 1. 答题页 (支持上一题/下一题) ---
+# --- 1. 答题页 (城市测评同款卡片) ---
 elif st.session_state.step == 1:
     idx = st.session_state.q_index
     q_data = QUESTIONS[idx]
     
-    # 顶部进度条
+    # 1. 进度条在最上面
     progress = (idx + 1) / len(QUESTIONS)
     st.progress(progress, text=f"灵魂扫描中... {idx + 1}/{len(QUESTIONS)}")
     
-    # 题目
-    st.markdown(f"### Q{idx+1}. {q_data['q']}")
+    # 2. 白色卡片包裹核心内容
+    st.markdown('<div class="main-card">', unsafe_allow_html=True)
     
-    # 获取当前题目的选项文本列表
+    # 题目文本
+    st.markdown(f'<div class="question-text">Q{idx+1}. {q_data["q"]}</div>', unsafe_allow_html=True)
+    
     options_list = [opt['txt'] for opt in q_data['options']]
-    
-    # 检查这一题之前是否选过，如果有，默认选中之前的答案
     default_index = st.session_state.answers.get(idx, 0)
     
-    # 核心交互：单选框
+    # 选项 (现在会显示为大按钮样式)
     selected_option = st.radio(
         "请选择:", 
         options_list, 
         index=default_index,
-        label_visibility="collapsed" # 隐藏"请选择"这几个字，更简洁
+        label_visibility="collapsed"
     )
+    st.markdown('</div>', unsafe_allow_html=True) # 闭合卡片
     
-    # 找到用户选的是第几个选项
     current_selection_index = options_list.index(selected_option)
     
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    # 底部导航按钮
-    c1, c2, c3 = st.columns([1, 2, 1])
+    # 3. 底部导航按钮 (左右分布)
+    c1, c2, c3 = st.columns([1, 0.5, 1])
     
     with c1:
         if idx > 0:
-            if st.button("⬅️ 上一题"):
+            if st.button("⬅️ 上一题", type="secondary", use_container_width=True):
                 st.session_state.q_index -= 1
                 st.rerun()
                 
     with c3:
-        # 如果是最后一题，显示“查看结果”
         if idx == len(QUESTIONS) - 1:
-            if st.button("查看结果 🚀", type="primary"):
-                # 记录最后一题的答案
+            if st.button("查看结果 🚀", type="primary", use_container_width=True):
                 st.session_state.answers[idx] = current_selection_index
                 st.session_state.step = 2
                 st.rerun()
         else:
-            if st.button("下一题 ➡️", type="primary"):
-                # 记录当前题答案
+            if st.button("下一题 ➡️", type="primary", use_container_width=True):
                 st.session_state.answers[idx] = current_selection_index
                 st.session_state.q_index += 1
                 st.rerun()
 
-# --- 2. 结果页 (原生组件渲染，解决图片不显示问题) ---
+# --- 2. 结果页 (大数字 + 精美排版) ---
 elif st.session_state.step == 2:
     st.balloons()
     
-    # === 现场算分 ===
-    # 初始化分数
+    # 计算逻辑
     final_scores = {k: 0 for k in CATS.keys()}
-    
-    # 遍历每一道题的答案
     for q_i, ans_i in st.session_state.answers.items():
-        # 找到这道题对应的 targets
         targets = QUESTIONS[q_i]['options'][ans_i]['targets']
         for cat_key in targets:
             if cat_key in final_scores:
                 final_scores[cat_key] += 1
 
-    # 排序
     sorted_scores = sorted(final_scores.items(), key=lambda x: x[1], reverse=True)
     top1_key = sorted_scores[0][0]
+    top1_score = sorted_scores[0][1]
     top1_cat = CATS[top1_key]
     
-    # === 核心结果 ===
-    st.markdown("<center style='color:#888'>你的灵魂本命猫是</center>", unsafe_allow_html=True)
-    st.markdown(f"<h1 style='text-align:center; color:#ff6b81; margin-top:-10px'>{top1_cat['name']}</h1>", unsafe_allow_html=True)
+    # 计算匹配度 (简单算法)
+    match_percentage = min(99, 88 + top1_score * 2)
     
-    # 主图 (使用 st.image 确保图片能显示)
-    st.image(top1_cat['img'], use_column_width=True)
+    # === 结果卡片 ===
+    st.markdown('<div class="main-card">', unsafe_allow_html=True)
     
+    st.markdown("<center style='color:#888; font-size:14px; letter-spacing: 2px;'>你的前世灵魂是</center>", unsafe_allow_html=True)
+    st.markdown(f"<h2 style='text-align:center; color:#2c3e50; margin-top:5px; margin-bottom: 20px;'>{top1_cat['name']}</h2>", unsafe_allow_html=True)
+    
+    # 匹配度大数字
+    st.markdown(f"<div class='big-score'>{match_percentage}%</div>", unsafe_allow_html=True)
+    st.markdown("<div style='text-align:center; color:#a1c4fd; font-weight:bold; margin-bottom:20px;'>灵 魂 契 合 度</div>", unsafe_allow_html=True)
+
     # 标签
     st.markdown(f"""
-    <div style='text-align:center; margin-bottom:15px'>
+    <div style='text-align:center; margin-bottom:20px'>
         {''.join([f'<span class="tag-span">{tag}</span>' for tag in top1_cat['tags']])}
     </div>
     """, unsafe_allow_html=True)
+
+    # 图片
+    st.image(top1_cat['img'], use_column_width=True)
     
-    st.info(top1_cat['desc'])
+    # 描述
+    st.markdown(f"<div style='margin-top:20px; line-height:1.6; color:#555;'>{top1_cat['desc']}</div>", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True) # 闭合卡片
     
-    # === 备选契合 (第2-4名) ===
+    # === 备选契合 ===
     st.markdown("### 🧩 你的其他性格切片")
     st.caption("虽然你是那个品种，但有时候你也像它们...")
     
-    # 使用 Streamlit 原生布局替代 HTML img，解决图片不显示问题
     for i in range(1, 4):
         key = sorted_scores[i][0]
         score = sorted_scores[i][1]
         cat = CATS[key]
-        match_rate = min(98, 70 + score * 3)
+        sub_match = min(90, 70 + score * 3)
         
-        # 容器卡片
-        with st.container(border=True):
-            col_img, col_txt = st.columns([1, 3])
-            
-            with col_img:
-                # 这里使用 st.image，它能完美处理本地路径
-                st.image(cat['img'], use_column_width=True)
-            
-            with col_txt:
-                st.subheader(cat['name'])
-                st.markdown(f"<span style='color:#666; font-size:14px'>潜在契合度: {match_rate}%</span>", unsafe_allow_html=True)
+        # 使用白色卡片容器
+        st.markdown('<div class="main-card" style="padding: 15px; margin-top:10px; margin-bottom:10px;">', unsafe_allow_html=True)
+        col_img, col_txt = st.columns([1, 3])
+        with col_img:
+            st.image(cat['img'], use_column_width=True)
+        with col_txt:
+            st.markdown(f"**{cat['name']}**")
+            st.caption(f"潜在契合度: {sub_match}%")
+        st.markdown('</div>', unsafe_allow_html=True)
     
-    st.markdown("---")
-    
-    # 重测按钮
-    if st.button("🔄 重测"):
+    st.markdown("<br>", unsafe_allow_html=True)
+    if st.button("🔄 转世重修 (重测)", type="primary", use_container_width=True):
         st.session_state.step = 0
         st.session_state.answers = {}
         st.session_state.q_index = 0
