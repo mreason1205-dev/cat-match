@@ -8,118 +8,95 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# ================= 2. “城市测评”同款 UI 样式 =================
+# ================= 2. 交互级 UI 修复 =================
 st.markdown("""
 <style>
-    /* 1. 全局去噪 */
+    /* 1. 全局净化 */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     .stDeployButton {display: none;}
-    [data-testid="stDecoration"] {display: none;}
-    [data-testid="stStatusWidget"] {display: none;}
     
-    /* 2. 背景色调整 (淡雅灰蓝，突出中间卡片) */
+    /* 2. 背景设置 (灰蓝渐变) */
     .stApp {
         background-color: #f0f4f8;
         background-image: linear-gradient(180deg, #f0f4f8 0%, #eef2f6 100%);
+        background-attachment: fixed;
     }
 
-    /* 3. 核心容器：白色卡片效果 */
-    .main-card {
-        background-color: #ffffff;
-        border-radius: 20px;
-        padding: 30px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-        margin-top: 20px;
-        margin-bottom: 20px;
-    }
-
-    /* 4. 单选框变身：参考图04的选项条样式 */
-    .stRadio > div {
-        gap: 12px;
-    }
-    .stRadio > div > label {
-        background-color: #f8f9fa; /* 浅灰背景 */
-        padding: 18px 20px;
-        border-radius: 12px;
-        border: 2px solid transparent;
-        transition: all 0.3s ease;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        width: 100%;
-    }
-    /* 鼠标悬停效果 */
-    .stRadio > div > label:hover {
-        background-color: #ffffff;
-        border-color: #8ec5fc; /* 悬停时显示淡蓝边框 */
-        box-shadow: 0 4px 12px rgba(142, 197, 252, 0.2);
-        transform: translateY(-2px);
-    }
-    /* 选中状态的高亮 (Streamlit 内部比较难完全定制 radio 选中态，但可以用 CSS 优化文字) */
-    .stRadio > div > label[data-baseweb="radio"] > div:first-child {
-        margin-right: 15px;
-    }
-    
-    /* 5. 进度条美化 (参考图04顶部) */
+    /* 3. 进度条 */
     .stProgress > div > div > div > div {
         background-image: linear-gradient(90deg, #a1c4fd 0%, #c2e9fb 100%);
         height: 10px;
         border-radius: 5px;
     }
+
+    /* 4. 选项卡片样式 (关键修复：不再隐藏圆圈！) */
+    div[role="radiogroup"] > label {
+        background-color: #ffffff !important;
+        padding: 15px 20px !important;
+        border-radius: 12px !important;
+        border: 1px solid #eee !important;
+        margin-bottom: 12px !important;
+        width: 100% !important;
+        transition: all 0.2s ease !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.02) !important;
+        display: flex !important; /* 保证圆圈和文字对齐 */
+    }
     
-    /* 6. 按钮美化：区分“上一题”和“下一题” */
-    /* 普通按钮 (上一题) */
-    button[kind="secondary"] {
-        background-color: #f1f3f5;
-        color: #495057;
-        border: none;
-        border-radius: 25px;
-        padding: 10px 25px;
-        font-weight: bold;
-    }
-    /* 重点按钮 (下一题/开始/结果) */
-    button[kind="primary"] {
-        background: linear-gradient(90deg, #8fd3f4 0%, #84fab0 100%);
-        color: white;
-        border: none;
-        border-radius: 25px;
-        padding: 10px 30px;
-        font-weight: bold;
-        box-shadow: 0 4px 15px rgba(132, 250, 176, 0.4);
-        transition: all 0.3s;
-    }
-    button[kind="primary"]:hover {
-        transform: scale(1.02);
-        box-shadow: 0 6px 20px rgba(132, 250, 176, 0.6);
+    /* 悬停效果 */
+    div[role="radiogroup"] > label:hover {
+        border-color: #8ec5fc !important;
+        background-color: #f8fbff !important;
     }
 
-    /* 7. 字体排版优化 */
-    h1, h2, h3 {
-        font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
-        color: #2c3e50;
+    /* 5. 题目大卡片容器 */
+    [data-testid="stVerticalBlockBorderWrapper"] {
+        background-color: white !important;
+        border-radius: 20px !important;
+        padding: 30px !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05) !important;
+        border: none !important;
     }
-    .question-text {
+
+    /* 6. 字体优化 */
+    h1, h2, h3, p, div, span, button {
+        font-family: "PingFang SC", "Microsoft YaHei", sans-serif !important;
+    }
+    
+    .question-header {
         font-size: 20px;
         font-weight: 700;
         color: #2c3e50;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
         line-height: 1.5;
     }
     
-    /* 8. 结果页大数字 */
+    .q-num {
+        color: #8ec5fc;
+        font-size: 22px;
+        margin-right: 10px;
+    }
+
+    /* 7. 结果页大数字 */
     .big-score {
-        font-size: 48px;
-        font-weight: 800;
-        color: #8fd3f4; /* 主题色 */
+        font-size: 60px;
+        font-weight: 900;
+        color: #8fd3f4;
         text-align: center;
-        margin: 10px 0;
+        margin: 5px 0;
+        text-shadow: 2px 2px 0px #fff;
+    }
+    
+    /* 8. 强制清除列背景 (双重保险) */
+    [data-testid="column"] {
+        background: transparent !important;
+        box-shadow: none !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# ================= 3. 数据准备 (图片名需全小写) =================
+# ================= 3. 数据准备 =================
 CATS = {
     "Ragdoll": {
         "name": "布偶猫 (Ragdoll)",
@@ -213,42 +190,41 @@ CATS = {
     }
 }
 
-# 4. 题库 (前三题已重制，更具猫咪本能感)
 QUESTIONS = [
     {
         "q": "如果你的前世是只猫，当家里突然来了陌生客人，你会？", 
         "options": [
-            {"txt": "好奇地凑过去闻一闻，蹭蹭裤腿", "targets": ["Orange", "GoldenShade", "Cow", "DevonRex", "Cheese"]},
-            {"txt": "在远处高冷观察，敌不动我不动", "targets": ["DragonLi", "SilverShade", "Calico", "MaineCoon", "Jianzhou"]},
-            {"txt": "吓得立刻钻进沙发底或床底，看不见我", "targets": ["Ragdoll", "Sphynx", "BlueCat", "Chinchilla"]},
+            {"txt": "好奇凑过去闻闻，蹭蹭裤腿", "targets": ["Orange", "GoldenShade", "Cow", "DevonRex", "Cheese"]},
+            {"txt": "远处高冷观察，敌不动我不动", "targets": ["DragonLi", "SilverShade", "Calico", "MaineCoon", "Jianzhou"]},
+            {"txt": "吓得立刻钻进沙发底或床底", "targets": ["Ragdoll", "Sphynx", "BlueCat", "Chinchilla"]},
             {"txt": "完全无视，继续睡我的大觉", "targets": ["BlueWhite", "Orange", "BlueCat"]}
         ]
     },
     {
         "q": "当你看到窗外飞过一只小鸟，你的本能反应是？",
         "options": [
-            {"txt": "发出“咔咔咔”的声音，激动地想抓", "targets": ["DragonLi", "Jianzhou", "Cow", "DevonRex", "MaineCoon"]},
+            {"txt": "发出咔咔声，激动地想抓", "targets": ["DragonLi", "Jianzhou", "Cow", "DevonRex", "MaineCoon"]},
             {"txt": "静静地欣赏，思考猫生", "targets": ["SilverShade", "Chinchilla", "Ragdoll", "BlueCat"]},
-            {"txt": "没啥反应，不如碗里的罐头有吸引力", "targets": ["Orange", "GoldenShade", "BlueWhite"]},
+            {"txt": "没啥反应，不如罐头香", "targets": ["Orange", "GoldenShade", "BlueWhite"]},
             {"txt": "试图打开窗户跟它聊聊", "targets": ["Sphynx", "Cheese", "Calico"]}
         ]
     },
     {
         "q": "如果你要向主人表达爱意，你更倾向于？",
         "options": [
-            {"txt": "直接一屁股坐在他/她脸上，贴贴！", "targets": ["Ragdoll", "Sphynx", "DevonRex", "Cheese"]},
-            {"txt": "叼一只蟑螂/老鼠送给他（这是礼物！）", "targets": ["DragonLi", "Jianzhou", "Cow", "MaineCoon"]},
-            {"txt": "在他工作时，默默趴在旁边陪伴", "targets": ["GoldenShade", "BlueCat", "SilverShade", "BlueWhite"]},
-            {"txt": "允许他摸我两下，这就是最大的恩赐了", "targets": ["Calico", "Chinchilla", "SilverShade"]}
+            {"txt": "直接一屁股坐脸上，贴贴！", "targets": ["Ragdoll", "Sphynx", "DevonRex", "Cheese"]},
+            {"txt": "叼一只蟑螂/老鼠送给他", "targets": ["DragonLi", "Jianzhou", "Cow", "MaineCoon"]},
+            {"txt": "在他工作时，默默趴旁边", "targets": ["GoldenShade", "BlueCat", "SilverShade", "BlueWhite"]},
+            {"txt": "允许他摸两下，是恩赐", "targets": ["Calico", "Chinchilla", "SilverShade"]}
         ]
     },
     {
         "q": "在社交场合中，你通常是？",
         "options": [
-            {"txt": "全场焦点，社牛本牛 (E人)", "targets": ["Cow", "DevonRex", "Orange", "Cheese"]},
-            {"txt": "只跟熟人聊，生人勿近 (I人)", "targets": ["Calico", "DragonLi", "SilverShade", "Russian"]},
-            {"txt": "温和的倾听者，微笑回应", "targets": ["GoldenShade", "BlueCat", "Ragdoll"]},
-            {"txt": "游刃有余，照顾每个人的感受", "targets": ["MaineCoon", "BlueWhite"]}
+            {"txt": "全场焦点，社牛本牛", "targets": ["Cow", "DevonRex", "Orange", "Cheese"]},
+            {"txt": "只跟熟人聊，生人勿近", "targets": ["Calico", "DragonLi", "SilverShade"]},
+            {"txt": "温和倾听者，微笑回应", "targets": ["GoldenShade", "BlueCat", "Ragdoll"]},
+            {"txt": "游刃有余，照顾每个人", "targets": ["MaineCoon", "BlueWhite"]}
         ]
     },
     {
@@ -257,15 +233,15 @@ QUESTIONS = [
             {"txt": "找人撒娇求助，求抱抱", "targets": ["Ragdoll", "Sphynx", "Chinchilla"]},
             {"txt": "自己死磕，绝不认输", "targets": ["DragonLi", "Jianzhou", "MaineCoon"]},
             {"txt": "先吃顿好的，睡一觉再说", "targets": ["Orange", "GoldenShade", "BlueCat"]},
-            {"txt": "另辟蹊径，用奇怪的方法解决", "targets": ["Cow", "DevonRex", "Cheese"]}
+            {"txt": "另辟蹊径，用奇怪招数", "targets": ["Cow", "DevonRex", "Cheese"]}
         ]
     },
     {
         "q": "对于“粘人”这件事，你怎么看？",
         "options": [
-            {"txt": "我是粘人精，分开一秒都难受", "targets": ["Sphynx", "Ragdoll", "DevonRex"]},
+            {"txt": "我是粘人精，分开难受", "targets": ["Sphynx", "Ragdoll", "DevonRex"]},
             {"txt": "看心情，想理你才理你", "targets": ["Calico", "SilverShade", "BlueCat"]},
-            {"txt": "不需要太粘，有各自空间最好", "targets": ["DragonLi", "Jianzhou", "MaineCoon"]},
+            {"txt": "不需要太粘，有各自空间", "targets": ["DragonLi", "Jianzhou", "MaineCoon"]},
             {"txt": "刚刚好，互相陪伴", "targets": ["GoldenShade", "Cheese", "BlueWhite"]}
         ]
     },
@@ -291,7 +267,7 @@ QUESTIONS = [
         "q": "你对生活环境的要求？",
         "options": [
             {"txt": "必须干净整洁，有洁癖", "targets": ["Chinchilla", "SilverShade", "Calico"]},
-            {"txt": "舒服就行，稍微乱点也没事", "targets": ["Orange", "GoldenShade", "Cheese"]},
+            {"txt": "舒服就行，稍微乱点没事", "targets": ["Orange", "GoldenShade", "Cheese"]},
             {"txt": "只要有张床，哪里都能睡", "targets": ["BlueCat", "Cow", "BlueWhite"]},
             {"txt": "喜欢高处，视野要好", "targets": ["DragonLi", "MaineCoon", "Jianzhou"]}
         ]
@@ -309,9 +285,9 @@ QUESTIONS = [
         "q": "你更喜欢哪种类型的伴侣？",
         "options": [
             {"txt": "能照顾我的，宠我的", "targets": ["Ragdoll", "Chinchilla", "Sphynx"]},
-            {"txt": "势均力敌的，能一起进步的", "targets": ["DragonLi", "MaineCoon", "Jianzhou"]},
+            {"txt": "势均力敌，能一起进步", "targets": ["DragonLi", "MaineCoon", "Jianzhou"]},
             {"txt": "有趣的，能玩到一起的", "targets": ["Cow", "DevonRex", "Cheese"]},
-            {"txt": "情绪稳定的，包容性强的", "targets": ["GoldenShade", "BlueCat", "SilverShade"]}
+            {"txt": "情绪稳定，包容性强的", "targets": ["GoldenShade", "BlueCat", "SilverShade"]}
         ]
     },
     {
@@ -335,89 +311,98 @@ if 'answers' not in st.session_state:
 
 # ================= 5. 页面逻辑 =================
 
-# --- 0. 激活页 (封面升级) ---
+# --- 0. 激活页 ---
 if st.session_state.step == 0:
     st.markdown("<br>", unsafe_allow_html=True)
-    # 标题
     st.markdown("<h1 style='text-align: center; color: #2c3e50;'>🔮 如果你的前世是一只小猫</h1>", unsafe_allow_html=True)
     st.caption("全网最火 · 灵魂品种测试 · 你的本能反应")
     
-    # 封面图 (可替换)
     st.image("https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800&q=80", use_column_width=True)
+    st.markdown("<br>", unsafe_allow_html=True)
     
-    st.markdown("---")
-    
-    # 开始区域放在一个卡片里
-    st.markdown('<div class="main-card">', unsafe_allow_html=True)
-    col1, col2 = st.columns([3, 1])
-    with col1:
-        code = st.text_input("请输入激活码", placeholder="CAT666", label_visibility="collapsed")
-    with col2:
-        start_btn = st.button("开始唤醒 ⚡", type="primary", use_container_width=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-    
-    if start_btn:
-        if code == "CAT666":
-            st.session_state.step = 1
-            st.rerun() 
-        else:
-            st.error("激活码是 CAT666 哦~")
+    with st.container(border=True):
+        st.markdown("<div style='text-align:center; color:#666; margin-bottom:10px;'>🔑 输入激活码解锁测试</div>", unsafe_allow_html=True)
+        code = st.text_input("激活码", placeholder="CAT666", label_visibility="collapsed")
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("开始唤醒 ⚡", type="primary", use_container_width=True):
+            if code == "CAT666":
+                st.session_state.step = 1
+                st.rerun() 
+            else:
+                st.error("激活码是 CAT666 哦~")
 
-# --- 1. 答题页 (城市测评同款卡片) ---
+# --- 1. 答题页 ---
 elif st.session_state.step == 1:
     idx = st.session_state.q_index
     q_data = QUESTIONS[idx]
     
-    # 1. 进度条在最上面
+    # 进度条
     progress = (idx + 1) / len(QUESTIONS)
     st.progress(progress, text=f"灵魂扫描中... {idx + 1}/{len(QUESTIONS)}")
     
-    # 2. 白色卡片包裹核心内容
-    st.markdown('<div class="main-card">', unsafe_allow_html=True)
+    # --- 题目卡片 ---
+    with st.container(border=True):
+        st.markdown(f'''
+            <div class="question-header">
+                <span class="q-num">问题{idx+1}</span> {q_data["q"]}
+            </div>
+        ''', unsafe_allow_html=True)
+        
+        options_list = [opt['txt'] for opt in q_data['options']]
+        default_index = st.session_state.answers.get(idx, None)
+        
+        selected_option = st.radio(
+            "请选择:", 
+            options_list, 
+            index=default_index, 
+            label_visibility="collapsed"
+        )
     
-    # 题目文本
-    st.markdown(f'<div class="question-text">Q{idx+1}. {q_data["q"]}</div>', unsafe_allow_html=True)
+    # --- 底部按钮区域 ---
+    st.markdown("<br>", unsafe_allow_html=True)
     
-    options_list = [opt['txt'] for opt in q_data['options']]
-    default_index = st.session_state.answers.get(idx, 0)
+    current_selection_index = options_list.index(selected_option) if selected_option else None
     
-    # 选项 (现在会显示为大按钮样式)
-    selected_option = st.radio(
-        "请选择:", 
-        options_list, 
-        index=default_index,
-        label_visibility="collapsed"
-    )
-    st.markdown('</div>', unsafe_allow_html=True) # 闭合卡片
-    
-    current_selection_index = options_list.index(selected_option)
-    
-    # 3. 底部导航按钮 (左右分布)
-    c1, c2, c3 = st.columns([1, 0.5, 1])
-    
-    with c1:
-        if idx > 0:
-            if st.button("⬅️ 上一题", type="secondary", use_container_width=True):
-                st.session_state.q_index -= 1
-                st.rerun()
-                
-    with c3:
-        if idx == len(QUESTIONS) - 1:
-            if st.button("查看结果 🚀", type="primary", use_container_width=True):
-                st.session_state.answers[idx] = current_selection_index
-                st.session_state.step = 2
-                st.rerun()
-        else:
-            if st.button("下一题 ➡️", type="primary", use_container_width=True):
+    # 逻辑：如果是第一题，直接放一个全宽的下一题按钮（不分列，避免鬼影）
+    if idx == 0:
+        if st.button("下一题 ➡️", type="primary", use_container_width=True):
+            if current_selection_index is not None:
                 st.session_state.answers[idx] = current_selection_index
                 st.session_state.q_index += 1
                 st.rerun()
+            else:
+                st.toast('👻 请先选择一个选项哦！', icon="🐾")
+    
+    # 逻辑：如果是其他题目，显示 上一题/下一题
+    else:
+        c1, c2 = st.columns([1, 1])
+        with c1:
+            if st.button("⬅️ 上一题", type="secondary", use_container_width=True):
+                st.session_state.q_index -= 1
+                st.rerun()
+        
+        with c2:
+            if idx == len(QUESTIONS) - 1:
+                if st.button("查看结果 🚀", type="primary", use_container_width=True):
+                    if current_selection_index is not None:
+                        st.session_state.answers[idx] = current_selection_index
+                        st.session_state.step = 2
+                        st.rerun()
+                    else:
+                        st.toast('👻 请先选择一个选项哦！', icon="🐾")
+            else:
+                if st.button("下一题 ➡️", type="primary", use_container_width=True):
+                    if current_selection_index is not None:
+                        st.session_state.answers[idx] = current_selection_index
+                        st.session_state.q_index += 1
+                        st.rerun()
+                    else:
+                        st.toast('👻 请先选择一个选项哦！', icon="🐾")
 
-# --- 2. 结果页 (大数字 + 精美排版) ---
+# --- 2. 结果页 ---
 elif st.session_state.step == 2:
     st.balloons()
     
-    # 计算逻辑
     final_scores = {k: 0 for k in CATS.keys()}
     for q_i, ans_i in st.session_state.answers.items():
         targets = QUESTIONS[q_i]['options'][ans_i]['targets']
@@ -430,52 +415,36 @@ elif st.session_state.step == 2:
     top1_score = sorted_scores[0][1]
     top1_cat = CATS[top1_key]
     
-    # 计算匹配度 (简单算法)
-    match_percentage = min(99, 88 + top1_score * 2)
+    match_percentage = min(99, 60 + top1_score * 4)
     
-    # === 结果卡片 ===
-    st.markdown('<div class="main-card">', unsafe_allow_html=True)
+    with st.container(border=True):
+        st.markdown("<center style='color:#888; font-size:14px; letter-spacing: 2px;'>你的前世灵魂是</center>", unsafe_allow_html=True)
+        st.markdown(f"<h2 style='text-align:center; color:#2c3e50; margin-top:5px; margin-bottom: 5px;'>{top1_cat['name']}</h2>", unsafe_allow_html=True)
+        st.markdown(f"<div class='big-score'>{match_percentage}%</div>", unsafe_allow_html=True)
+        st.markdown("<div style='text-align:center; color:#a1c4fd; font-weight:bold; margin-bottom:20px;'>灵 魂 契 合 度</div>", unsafe_allow_html=True)
+        st.image(top1_cat['img'], use_column_width=True)
+        st.markdown(f"""
+        <div style='text-align:center; margin-top:15px; margin-bottom:15px'>
+            {''.join([f'<span class="tag-span">{tag}</span>' for tag in top1_cat['tags']])}
+        </div>
+        """, unsafe_allow_html=True)
+        st.markdown(f"<div style='line-height:1.6; color:#555; text-align:justify;'>{top1_cat['desc']}</div>", unsafe_allow_html=True)
     
-    st.markdown("<center style='color:#888; font-size:14px; letter-spacing: 2px;'>你的前世灵魂是</center>", unsafe_allow_html=True)
-    st.markdown(f"<h2 style='text-align:center; color:#2c3e50; margin-top:5px; margin-bottom: 20px;'>{top1_cat['name']}</h2>", unsafe_allow_html=True)
-    
-    # 匹配度大数字
-    st.markdown(f"<div class='big-score'>{match_percentage}%</div>", unsafe_allow_html=True)
-    st.markdown("<div style='text-align:center; color:#a1c4fd; font-weight:bold; margin-bottom:20px;'>灵 魂 契 合 度</div>", unsafe_allow_html=True)
-
-    # 标签
-    st.markdown(f"""
-    <div style='text-align:center; margin-bottom:20px'>
-        {''.join([f'<span class="tag-span">{tag}</span>' for tag in top1_cat['tags']])}
-    </div>
-    """, unsafe_allow_html=True)
-
-    # 图片
-    st.image(top1_cat['img'], use_column_width=True)
-    
-    # 描述
-    st.markdown(f"<div style='margin-top:20px; line-height:1.6; color:#555;'>{top1_cat['desc']}</div>", unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True) # 闭合卡片
-    
-    # === 备选契合 ===
     st.markdown("### 🧩 你的其他性格切片")
-    st.caption("虽然你是那个品种，但有时候你也像它们...")
     
     for i in range(1, 4):
         key = sorted_scores[i][0]
         score = sorted_scores[i][1]
         cat = CATS[key]
-        sub_match = min(90, 70 + score * 3)
-        
-        # 使用白色卡片容器
-        st.markdown('<div class="main-card" style="padding: 15px; margin-top:10px; margin-bottom:10px;">', unsafe_allow_html=True)
-        col_img, col_txt = st.columns([1, 3])
-        with col_img:
-            st.image(cat['img'], use_column_width=True)
-        with col_txt:
-            st.markdown(f"**{cat['name']}**")
-            st.caption(f"潜在契合度: {sub_match}%")
-        st.markdown('</div>', unsafe_allow_html=True)
+        sub_match = min(90, 50 + score * 4)
+        with st.container(border=True):
+            col_img, col_txt = st.columns([1, 2.5])
+            with col_img:
+                st.image(cat['img'], use_column_width=True)
+            with col_txt:
+                st.markdown(f"**{cat['name']}**")
+                st.markdown(f"<div style='font-size:12px; color:#999; margin-bottom:5px;'>潜在契合度: {sub_match}%</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='font-size:12px; color:#666;'>{cat['tags'][0]} {cat['tags'][1]}</div>", unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("🔄 转世重修 (重测)", type="primary", use_container_width=True):
