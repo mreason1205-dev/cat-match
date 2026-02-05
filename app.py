@@ -31,7 +31,7 @@ st.markdown("""
         border-radius: 5px;
     }
 
-    /* 4. 选项卡片样式 (关键修复：不再隐藏圆圈！) */
+    /* 4. 选项卡片样式 */
     div[role="radiogroup"] > label {
         background-color: #ffffff !important;
         padding: 15px 20px !important;
@@ -41,7 +41,7 @@ st.markdown("""
         width: 100% !important;
         transition: all 0.2s ease !important;
         box-shadow: 0 2px 5px rgba(0,0,0,0.02) !important;
-        display: flex !important; /* 保证圆圈和文字对齐 */
+        display: flex !important; 
     }
     
     /* 悬停效果 */
@@ -88,7 +88,7 @@ st.markdown("""
         text-shadow: 2px 2px 0px #fff;
     }
     
-    /* 8. 强制清除列背景 (双重保险) */
+    /* 8. 强制清除列背景 */
     [data-testid="column"] {
         background: transparent !important;
         box-shadow: none !important;
@@ -190,6 +190,7 @@ CATS = {
     }
 }
 
+# 18道题目：含6道新增模拟题
 QUESTIONS = [
     {
         "q": "如果你的前世是只猫，当家里突然来了陌生客人，你会？", 
@@ -207,6 +208,24 @@ QUESTIONS = [
             {"txt": "静静地欣赏，思考猫生", "targets": ["SilverShade", "Chinchilla", "Ragdoll", "BlueCat"]},
             {"txt": "没啥反应，不如罐头香", "targets": ["Orange", "GoldenShade", "BlueWhite"]},
             {"txt": "试图打开窗户跟它聊聊", "targets": ["Sphynx", "Cheese", "Calico"]}
+        ]
+    },
+    {
+        "q": "主人买了个新快递，拆开后留下了纸箱，你会？",
+        "options": [
+            {"txt": "毫不犹豫跳进去，这是我的堡垒", "targets": ["Orange", "Cow", "BlueWhite", "Cheese"]},
+            {"txt": "闻一闻，如果不舒服就走开", "targets": ["Chinchilla", "SilverShade", "Calico"]},
+            {"txt": "疯狂撕咬纸箱，磨爪子解压", "targets": ["DragonLi", "Jianzhou", "DevonRex"]},
+            {"txt": "无视纸箱，我要睡软垫子", "targets": ["Ragdoll", "BlueCat", "GoldenShade"]}
+        ]
+    },
+    {
+        "q": "深夜两点，你的“夜猫子”基因觉醒了，你会？",
+        "options": [
+            {"txt": "在家里跑酷，从床头蹦到衣柜", "targets": ["Cow", "DevonRex", "Sphynx"]},
+            {"txt": "默默巡视领地，抓几只虫子", "targets": ["DragonLi", "Jianzhou", "MaineCoon"]},
+            {"txt": "睡得比猪还香，完全不想动", "targets": ["BlueCat", "GoldenShade", "Orange"]},
+            {"txt": "钻进主人被窝，求贴贴", "targets": ["Ragdoll", "Cheese", "SilverShade"]}
         ]
     },
     {
@@ -228,12 +247,30 @@ QUESTIONS = [
         ]
     },
     {
+        "q": "饭碗里的猫粮吃出了一个坑（中间空了），你会？",
+        "options": [
+            {"txt": "喵喵大叫，觉得已经没饭了", "targets": ["Orange", "BlueCat", "BlueWhite", "Ragdoll"]},
+            {"txt": "自己用爪子拨一下继续吃", "targets": ["DragonLi", "MaineCoon", "Jianzhou"]},
+            {"txt": "绝食抗议，必须倒满新的", "targets": ["Chinchilla", "SilverShade", "Calico"]},
+            {"txt": "无所谓，饿了再吃", "targets": ["GoldenShade", "Cheese", "Cow"]}
+        ]
+    },
+    {
         "q": "遇到困难和压力时，你会？",
         "options": [
             {"txt": "找人撒娇求助，求抱抱", "targets": ["Ragdoll", "Sphynx", "Chinchilla"]},
             {"txt": "自己死磕，绝不认输", "targets": ["DragonLi", "Jianzhou", "MaineCoon"]},
             {"txt": "先吃顿好的，睡一觉再说", "targets": ["Orange", "GoldenShade", "BlueCat"]},
             {"txt": "另辟蹊径，用奇怪招数", "targets": ["Cow", "DevonRex", "Cheese"]}
+        ]
+    },
+    {
+        "q": "主人正在用电脑工作，键盘发热，你会？",
+        "options": [
+            {"txt": "果断趴在键盘上，挡住屏幕", "targets": ["Sphynx", "Ragdoll", "DevonRex", "Orange"]},
+            {"txt": "在旁边盯着屏幕上的鼠标指针", "targets": ["DragonLi", "Cow", "BlueWhite"]},
+            {"txt": "只要在同一个房间陪着就行", "targets": ["MaineCoon", "GoldenShade", "Cheese"]},
+            {"txt": "离远点，别打扰我睡觉", "targets": ["BlueCat", "SilverShade", "Chinchilla"]}
         ]
     },
     {
@@ -255,6 +292,15 @@ QUESTIONS = [
         ]
     },
     {
+        "q": "如果你不想被抱，但主人非要抱你，你会？",
+        "options": [
+            {"txt": "变成液体流走，拒绝得很委婉", "targets": ["SilverShade", "BlueWhite", "Chinchilla"]},
+            {"txt": "一脚蹬开，甚至想哈气", "targets": ["Calico", "DragonLi", "Jianzhou"]},
+            {"txt": "忍一会，然后找机会溜走", "targets": ["MaineCoon", "Cheese", "BlueCat"]},
+            {"txt": "既然反抗不了，那就享受吧", "targets": ["Ragdoll", "Orange", "GoldenShade"]}
+        ]
+    },
+    {
         "q": "你觉得自己像什么动物？",
         "options": [
             {"txt": "狗狗 (忠诚、热情)", "targets": ["MaineCoon", "DevonRex", "Sphynx"]},
@@ -272,7 +318,16 @@ QUESTIONS = [
             {"txt": "喜欢高处，视野要好", "targets": ["DragonLi", "MaineCoon", "Jianzhou"]}
         ]
     },
-     {
+    {
+        "q": "看到一只虫子飞进了屋里，你的反应？",
+        "options": [
+            {"txt": "发出咯咯声，立刻捕猎", "targets": ["DragonLi", "Jianzhou", "DevonRex"]},
+            {"txt": "盯着看半天，最后懒得动", "targets": ["BlueCat", "GoldenShade", "SilverShade"]},
+            {"txt": "吓得躲起来", "targets": ["Ragdoll", "Chinchilla"]},
+            {"txt": "玩弄它，把它当玩具", "targets": ["Cow", "Sphynx", "Orange"]}
+        ]
+    },
+    {
         "q": "被人误解时，你会？",
         "options": [
             {"txt": "极力辩解，必须说清楚", "targets": ["DevonRex", "Sphynx", "Cow"]},
@@ -323,15 +378,13 @@ if st.session_state.step == 0:
     with st.container(border=True):
         st.markdown("<div style='text-align:center; color:#666; margin-bottom:10px;'>🔑 输入激活码解锁测试</div>", unsafe_allow_html=True)
         
-        # 核心修改：placeholder 改为“请输入激活码”
+        # 激活码输入框
         code_input = st.text_input("激活码", placeholder="请输入激活码", label_visibility="collapsed")
         
-        # 去空格
         code_clean = code_input.strip()
 
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button("开始唤醒 ⚡", type="primary", use_container_width=True):
-            # 核心修改：恢复 Secrets 验证逻辑
             try:
                 if code_clean in st.secrets["valid_codes"]:
                     st.session_state.step = 1
@@ -339,7 +392,6 @@ if st.session_state.step == 0:
                 else:
                     st.error("激活码错误或已失效，请检查~")
             except FileNotFoundError:
-                # 本地无Secrets时的后门
                 if code_clean == "CAT666":
                     st.session_state.step = 1
                     st.rerun()
@@ -375,7 +427,7 @@ elif st.session_state.step == 1:
     
     current_selection_index = options_list.index(selected_option) if selected_option else None
     
-    # 底部按钮逻辑：第一题只有下一题
+    # 底部按钮逻辑
     if idx == 0:
         if st.button("下一题 ➡️", type="primary", use_container_width=True):
             if current_selection_index is not None:
@@ -426,12 +478,17 @@ elif st.session_state.step == 2:
     top1_score = sorted_scores[0][1]
     top1_cat = CATS[top1_key]
     
-    match_percentage = min(99, 60 + top1_score * 4)
+    # 升级算法：适应18道题的积分池
+    # 满分大概是10-14分。60基础分，每得1分加3.5%。
+    # 5分 -> 77.5%
+    # 8分 -> 88%
+    # 11分 -> 98.5%
+    match_percentage = min(99, 60 + top1_score * 3.5)
     
     with st.container(border=True):
         st.markdown("<center style='color:#888; font-size:14px; letter-spacing: 2px;'>你的前世灵魂是</center>", unsafe_allow_html=True)
         st.markdown(f"<h2 style='text-align:center; color:#2c3e50; margin-top:5px; margin-bottom: 5px;'>{top1_cat['name']}</h2>", unsafe_allow_html=True)
-        st.markdown(f"<div class='big-score'>{match_percentage}%</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='big-score'>{int(match_percentage)}%</div>", unsafe_allow_html=True)
         st.markdown("<div style='text-align:center; color:#a1c4fd; font-weight:bold; margin-bottom:20px;'>灵 魂 契 合 度</div>", unsafe_allow_html=True)
         st.image(top1_cat['img'], use_column_width=True)
         st.markdown(f"""
@@ -447,14 +504,14 @@ elif st.session_state.step == 2:
         key = sorted_scores[i][0]
         score = sorted_scores[i][1]
         cat = CATS[key]
-        sub_match = min(90, 50 + score * 4)
+        sub_match = min(90, 50 + score * 3.5)
         with st.container(border=True):
             col_img, col_txt = st.columns([1, 2.5])
             with col_img:
                 st.image(cat['img'], use_column_width=True)
             with col_txt:
                 st.markdown(f"**{cat['name']}**")
-                st.markdown(f"<div style='font-size:12px; color:#999; margin-bottom:5px;'>潜在契合度: {sub_match}%</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='font-size:12px; color:#999; margin-bottom:5px;'>潜在契合度: {int(sub_match)}%</div>", unsafe_allow_html=True)
                 st.markdown(f"<div style='font-size:12px; color:#666;'>{cat['tags'][0]} {cat['tags'][1]}</div>", unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
