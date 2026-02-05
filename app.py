@@ -322,25 +322,38 @@ if st.session_state.step == 0:
     
     with st.container(border=True):
         st.markdown("<div style='text-align:center; color:#666; margin-bottom:10px;'>🔑 输入激活码解锁测试</div>", unsafe_allow_html=True)
-        code = st.text_input("激活码", placeholder="CAT666", label_visibility="collapsed")
+        
+        # 核心修改：placeholder 改为“请输入激活码”
+        code_input = st.text_input("激活码", placeholder="请输入激活码", label_visibility="collapsed")
+        
+        # 去空格
+        code_clean = code_input.strip()
+
         st.markdown("<br>", unsafe_allow_html=True)
         if st.button("开始唤醒 ⚡", type="primary", use_container_width=True):
-            if code == "CAT666":
-                st.session_state.step = 1
-                st.rerun() 
-            else:
-                st.error("激活码是 CAT666 哦~")
+            # 核心修改：恢复 Secrets 验证逻辑
+            try:
+                if code_clean in st.secrets["valid_codes"]:
+                    st.session_state.step = 1
+                    st.rerun() 
+                else:
+                    st.error("激活码错误或已失效，请检查~")
+            except FileNotFoundError:
+                # 本地无Secrets时的后门
+                if code_clean == "CAT666":
+                    st.session_state.step = 1
+                    st.rerun()
+                else:
+                    st.error("激活码错误 (请配置Secrets)")
 
 # --- 1. 答题页 ---
 elif st.session_state.step == 1:
     idx = st.session_state.q_index
     q_data = QUESTIONS[idx]
     
-    # 进度条
     progress = (idx + 1) / len(QUESTIONS)
     st.progress(progress, text=f"灵魂扫描中... {idx + 1}/{len(QUESTIONS)}")
     
-    # --- 题目卡片 ---
     with st.container(border=True):
         st.markdown(f'''
             <div class="question-header">
@@ -358,12 +371,11 @@ elif st.session_state.step == 1:
             label_visibility="collapsed"
         )
     
-    # --- 底部按钮区域 ---
     st.markdown("<br>", unsafe_allow_html=True)
     
     current_selection_index = options_list.index(selected_option) if selected_option else None
     
-    # 逻辑：如果是第一题，直接放一个全宽的下一题按钮（不分列，避免鬼影）
+    # 底部按钮逻辑：第一题只有下一题
     if idx == 0:
         if st.button("下一题 ➡️", type="primary", use_container_width=True):
             if current_selection_index is not None:
@@ -373,7 +385,6 @@ elif st.session_state.step == 1:
             else:
                 st.toast('👻 请先选择一个选项哦！', icon="🐾")
     
-    # 逻辑：如果是其他题目，显示 上一题/下一题
     else:
         c1, c2 = st.columns([1, 1])
         with c1:
