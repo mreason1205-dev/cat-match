@@ -97,71 +97,77 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ================= 3. 数据准备 =================
+# 将现有的15种猫映射到4大性格底色
+# A类(高冷王者): DragonLi(独立), MaineCoon(霸气), Jianzhou(强悍), Calico(傲娇), SilverShade(贵族)
+# B类(贴心黏人): Ragdoll(黏人), Sphynx(极度黏人), DevonRex(像狗)
+# C类(好奇探险): Cow(二哈), Cheese(美短), BlueWhite(好奇)
+# D类(摆烂大爷): Orange(胖), GoldenShade(稳), BlueCat(懒), Chinchilla(精致懒)
+
 CATS = {
     "Ragdoll": {
         "name": "布偶猫 (Ragdoll)",
-        "tags": ["#粘人精", "#颜值天花板", "#玻璃心"],
-        "desc": "你的灵魂柔软而细腻，像布偶猫一样，天生拥有极高的共情能力。你渴望被坚定地选择，愿意为了爱的人收起爪子。虽然偶尔会因为敏感而感到委屈，但你的温柔，是治愈这个世界最强大的力量。",
+        "tags": ["#黏人精", "#颜值天花板", "#贴心小棉袄"],
+        "desc": "你的前世一定是只布偶猫。你性格温柔软萌，极度重感情，比起独立闯荡，你更喜欢黏在在意的人身边。你拥有极高的共情能力，是大家公认的“治愈系”存在。",
         "img": "images/buoumao.jpg"
     },
     "SilverShade": {
         "name": "银渐层 (Silver Shade)",
-        "tags": ["#优雅贵族", "#有点小脾气", "#颜值正义"],
-        "desc": "你自带一种与生俱来的优雅气质，像银渐层一样，既不刻意讨好，也不过分疏离。你心里有一杆秤，谁对你好你心里门儿清。虽然偶尔会耍点小性子，但那正是你可爱的个性所在。",
+        "tags": ["#优雅贵族", "#有原则", "#高冷范"],
+        "desc": "你自带一种与生俱来的优雅气质，像银渐层一样。你既不刻意讨好，也不过分疏离，非常有原则。在陌生环境里你会保持矜持，只有对认可的人才会展示柔软的一面。",
         "img": "images/yinjianceng.jpg"
     },
     "GoldenShade": {
         "name": "金渐层 (Golden Shade)",
-        "tags": ["#人间富贵花", "#心态超稳", "#招财体质"],
-        "desc": "你就是大家眼中的“小福星”！像金渐层一样，性格圆润，心态超稳。你很少为了不值得的小事内耗，懂得享受生活。你这种松弛感，总能给身边的人带来好运和快乐。",
+        "tags": ["#人间富贵花", "#心态超稳", "#摆烂大爷"],
+        "desc": "你就是大家眼中的“小福星”！像金渐层一样，性格圆润，心态超稳。你很少为了不值得的小事内耗，懂得享受生活。做一只快乐的摆烂小猫，是你的人生哲学。",
         "img": "images/jinjianceng.jpg"
     },
     "MaineCoon":{
         "name": "缅因猫 (Maine Coon)",
-        "tags": ["#温柔巨人", "#安全感爆棚", "#外冷内热"],
-        "desc": "你的气场很强，像缅因猫一样给人十足的安全感。不熟悉的人觉得你高冷，但其实你内心住着一个小公主/小王子，对认定的人极度忠诚和温柔。你是那个能扛事儿的守护者。",
+        "tags": ["#温柔巨人", "#高冷王者", "#安全感"],
+        "desc": "你的气场很强，像缅因猫一样给人十足的安全感。不熟悉的人觉得你高冷，但其实你内心住着一个小公主，对认定的人极度忠诚。你是那种能扛事儿的守护者。",
         "img": "images/mianyinmao.jpg"
     },
     "DragonLi": {
         "name": "狸花猫 (Dragon Li)",
-        "tags": ["#智商天花板", "#独立酷飒", "#业务能力强"],
-        "desc": "如果前世是猫，你一定是那只统领街头的狸花猫。你独立、聪明、执行力极强，不需要依附任何人。在工作中你往往是那个能解决棘手问题的大神，在这个复杂的世界里活得游刃有余。",
+        "tags": ["#智商天花板", "#独立酷飒", "#独行侠"],
+        "desc": "如果前世是猫，你一定是那只统领街头的狸花猫。你独立、聪明、执行力极强，不需要依附任何人。你享受独处的时光，在工作中往往是那个能解决棘手问题的大神。",
         "img": "images/lihuamao.jpg"
     },
     "Jianzhou": {
         "name": "简州猫 (Jianzhou)",
-        "tags": ["#低调狩猎者", "#强悍实干", "#不服输"],
-        "desc": "你像传说中的简州猫一样，低调而强悍。你平时不显山不露水，但关键时刻爆发力惊人。你非常务实，不喜欢花里胡哨的东西，是典型的实干家，认定的目标绝不轻易放弃。",
+        "tags": ["#狩猎者", "#强悍实干", "#人狠话不多"],
+        "desc": "你像传说中的简州猫一样，低调而强悍。你平时不显山不露水，但关键时刻爆发力惊人。你非常务实，不喜欢花里胡哨的东西，是典型的实干家。",
         "img": "images/jianzhoumao.jpg"
     },
     "BlueWhite": {
         "name": "英短蓝白 (Blue Bicolor)",
-        "tags": ["#永远的少年", "#好奇宝宝", "#乐天派"],
-        "desc": "你的灵魂里住着一个长不大的孩子，像蓝白一样，永远对世界充满好奇。你有点小淘气，但因为长得可爱、性格开朗，总能被大家原谅。你是朋友圈里的开心果，有你在就不会冷场。",
+        "tags": ["#好奇宝宝", "#永远的少年", "#探险家"],
+        "desc": "你的灵魂里住着一个长不大的孩子，像蓝白一样，永远对世界充满好奇。你有点小淘气，喜欢探索新事物。你是朋友圈里的开心果，有你在就不会冷场。",
         "img": "images/yingduanlanbai.jpg"
     },
     "BlueCat": {
         "name": "英短蓝猫 (British Blue)",
-        "tags": ["#憨厚老实", "#记仇本仇", "#稳重"],
-        "desc": "你像蓝猫一样，给人一种憨厚老实、非常靠谱的感觉。你性格稳重，不容易生气（除非抢了你的吃的）。你比较慢热，不喜欢变动，喜欢安稳、有秩序的生活节奏。",
+        "tags": ["#憨厚老实", "#佛系躺平", "#稳重"],
+        "desc": "你像蓝猫一样，给人一种憨厚老实、非常靠谱的感觉。你性格稳重，不容易生气。你比较慢热，不喜欢变动，喜欢安稳、有秩序的慢生活。",
         "img": "images/yingduanlanmao.jpg"
     },
     "Orange": {
         "name": "橘猫 (Orange Tabby)",
-        "tags": ["#以大橘为重", "#社交悍匪", "#心宽体胖"],
+        "tags": ["#以大橘为重", "#社交悍匪", "#吃货"],
         "desc": "格局打开！你像大橘一样，心胸宽广，凡事不往心里去。你极具亲和力，朋友遍天下。虽然偶尔想躺平，但对生活的热爱从未减少。你是那种能吃得下饭、睡得着觉的有福之人。",
         "img": "images/jumao.jpg"
     },
     "Sphynx": {
         "name": "无毛猫 (Sphynx)",
         "tags": ["#极度粘人", "#特立独行", "#内心火热"],
-        "desc": "你像无毛猫一样特立独行，不在乎世俗的眼光。虽然外表看起来很酷、很独特，但其实你内心非常火热，极度渴望亲密关系，对爱人有着毫无保留的依赖。",
+        "desc": "你像无毛猫一样特立独行，不在乎世俗的眼光。虽然外表看起来很酷，但其实你内心非常火热，极度渴望亲密关系，对爱人有着毫无保留的依赖。",
         "img": "images/wumaomao.jpg"
     },
     "Calico": {
         "name": "三花猫 (Calico)",
         "tags": ["#傲娇御姐", "#双商在线", "#看心情"],
-        "desc": "你像三花猫一样，多数时候聪明且独立。你非常有主见，不会随波逐流。你有点小傲娇，只有对你真正认可的人，才会展示柔软的一面。你的爱是稀缺资源，给谁谁珍惜。",
+        "desc": "你像三花猫一样，多数时候聪明且独立。你非常有主见，不会随波逐流。你有点小傲娇，只有对你真正认可的人，才会展示柔软的一面。你的爱是稀缺资源。",
         "img": "images/sanhuamao.jpg"
     },
     "Chinchilla": {
@@ -173,185 +179,195 @@ CATS = {
     "Cow": {
         "name": "奶牛猫 (Tuxedo)",
         "tags": ["#猫中二哈", "#精力过剩", "#脑回路清奇"],
-        "desc": "你是独一无二的奶牛猫！脑回路清奇，经常做一些让人意想不到的事。你精力旺盛，是大家的快乐源泉。有你在，生活永远不会无聊，你总能发现生活中的奇奇怪怪和可可爱爱。",
+        "desc": "你是独一无二的奶牛猫！脑回路清奇，经常做一些让人意想不到的事。你精力旺盛，是大家的快乐源泉。有你在，生活永远不会无聊，你总能发现生活中的奇奇怪怪。",
         "img": "images/nainiumao.jpg"
     },
     "DevonRex": {
         "name": "德文卷毛猫 (Devon Rex)",
         "tags": ["#机灵小狗", "#古灵精怪", "#反应快"],
-        "desc": "你像德文卷毛猫一样，聪明机灵，反应极快。你性格像小狗一样热情，喜欢跟人互动，根本闲不下来。你古灵精怪，总能发现生活中的小乐趣，是大家的“小机灵鬼”。",
+        "desc": "你像德文卷毛猫一样，聪明机灵，反应极快。你性格像小狗一样热情，喜欢跟人互动，根本闲不下来。你古灵精怪，总能发现生活中的小乐趣。",
         "img": "images/dewenmao.jpg"
     },
     "Cheese": {
         "name": "起司猫 (Tabby & White)",
         "tags": ["#元气甜心", "#随和", "#适应力强"],
-        "desc": "你像起司猫一样，元气满满，乐观向上。你适应能力很强，无论遇到什么困难都能笑着面对。你的笑容很有感染力，就像冬日里的暖阳，让人忍不住想靠近。",
+        "desc": "你像起司猫一样，元气满满，乐观向上。你适应能力很强，无论遇到什么困难都能笑着面对。你的笑容很有感染力，就像冬日里的暖阳。",
         "img": "images/qisimao.jpg"
     }
 }
 
-# 18道题目：含6道新增模拟题
+# 18道题目：基于四大维度 + 情景题
+# A -> 高冷王者 (Group A)
+# B -> 贴心黏人 (Group B)
+# C -> 好奇探险 (Group C)
+# D -> 摆烂大爷 (Group D)
+
+GROUP_A = ["DragonLi", "MaineCoon", "Jianzhou", "Calico", "SilverShade"]
+GROUP_B = ["Ragdoll", "Sphynx", "DevonRex"]
+GROUP_C = ["Cow", "BlueWhite", "Cheese"]
+GROUP_D = ["Orange", "GoldenShade", "BlueCat", "Chinchilla"]
+
 QUESTIONS = [
     {
-        "q": "如果你的前世是只猫，当家里突然来了陌生客人，你会？", 
+        "q": "你最常处于的状态是？", 
         "options": [
-            {"txt": "好奇凑过去闻闻，蹭蹭裤腿", "targets": ["Orange", "GoldenShade", "Cow", "DevonRex", "Cheese"]},
-            {"txt": "远处高冷观察，敌不动我不动", "targets": ["DragonLi", "SilverShade", "Calico", "MaineCoon", "Jianzhou"]},
-            {"txt": "吓得立刻钻进沙发底或床底", "targets": ["Ragdoll", "Sphynx", "BlueCat", "Chinchilla"]},
-            {"txt": "完全无视，继续睡我的大觉", "targets": ["BlueWhite", "Orange", "BlueCat"]}
+            {"txt": "晒太阳发呆，谁叫都纹丝不动", "targets": GROUP_D},
+            {"txt": "巡视周边，对风吹草动超敏感", "targets": GROUP_A},
+            {"txt": "黏着在意的人求贴贴，离开就不安", "targets": GROUP_B},
+            {"txt": "自己玩自己的，偶尔给个眼神已是恩赐", "targets": GROUP_A} 
         ]
     },
     {
-        "q": "当你看到窗外飞过一只小鸟，你的本能反应是？",
+        "q": "遇到陌生环境，你的第一反应是？",
         "options": [
-            {"txt": "发出咔咔声，激动地想抓", "targets": ["DragonLi", "Jianzhou", "Cow", "DevonRex", "MaineCoon"]},
-            {"txt": "静静地欣赏，思考猫生", "targets": ["SilverShade", "Chinchilla", "Ragdoll", "BlueCat"]},
-            {"txt": "没啥反应，不如罐头香", "targets": ["Orange", "GoldenShade", "BlueWhite"]},
-            {"txt": "试图打开窗户跟它聊聊", "targets": ["Sphynx", "Cheese", "Calico"]}
+            {"txt": "立刻躲起来，观察半小时再试探", "targets": GROUP_B}, 
+            {"txt": "竖起耳朵谨慎探索，好奇大于胆怯", "targets": GROUP_C},
+            {"txt": "直接找看起来最温柔的人蹭腿求安全感", "targets": GROUP_B},
+            {"txt": "无所谓，在哪都能躺，适应力拉满", "targets": GROUP_D}
         ]
     },
     {
-        "q": "主人买了个新快递，拆开后留下了纸箱，你会？",
+        "q": "被人突然抱住，你会？",
         "options": [
-            {"txt": "毫不犹豫跳进去，这是我的堡垒", "targets": ["Orange", "Cow", "BlueWhite", "Cheese"]},
-            {"txt": "闻一闻，如果不舒服就走开", "targets": ["Chinchilla", "SilverShade", "Calico"]},
-            {"txt": "疯狂撕咬纸箱，磨爪子解压", "targets": ["DragonLi", "Jianzhou", "DevonRex"]},
-            {"txt": "无视纸箱，我要睡软垫子", "targets": ["Ragdoll", "BlueCat", "GoldenShade"]}
+            {"txt": "挣扎逃跑，甚至下意识哈气警告", "targets": GROUP_A},
+            {"txt": "僵硬 3 秒，确认无危险后慢慢放松", "targets": GROUP_A},
+            {"txt": "顺势躺平，还会主动蹭对方求抚摸", "targets": GROUP_B},
+            {"txt": "用爪子轻轻推开，保持体面且有距离", "targets": GROUP_D} 
         ]
     },
     {
-        "q": "深夜两点，你的“夜猫子”基因觉醒了，你会？",
+        "q": "你最喜欢的 “专属小窝” 是？",
         "options": [
-            {"txt": "在家里跑酷，从床头蹦到衣柜", "targets": ["Cow", "DevonRex", "Sphynx"]},
-            {"txt": "默默巡视领地，抓几只虫子", "targets": ["DragonLi", "Jianzhou", "MaineCoon"]},
-            {"txt": "睡得比猪还香，完全不想动", "targets": ["BlueCat", "GoldenShade", "Orange"]},
-            {"txt": "钻进主人被窝，求贴贴", "targets": ["Ragdoll", "Cheese", "SilverShade"]}
+            {"txt": "高处（书架顶、窗台、衣柜上）", "targets": GROUP_A},
+            {"txt": "封闭空间（纸箱、被窝、小角落）", "targets": GROUP_B},
+            {"txt": "人的腿上 / 身边，必须有体温陪伴", "targets": GROUP_B},
+            {"txt": "随机切换，哪里舒服躺哪里", "targets": GROUP_D}
         ]
     },
     {
-        "q": "如果你要向主人表达爱意，你更倾向于？",
+        "q": "玩耍时，你更偏爱哪种类型的玩具？",
         "options": [
-            {"txt": "直接一屁股坐脸上，贴贴！", "targets": ["Ragdoll", "Sphynx", "DevonRex", "Cheese"]},
-            {"txt": "叼一只蟑螂/老鼠送给他", "targets": ["DragonLi", "Jianzhou", "Cow", "MaineCoon"]},
-            {"txt": "在他工作时，默默趴旁边", "targets": ["GoldenShade", "BlueCat", "SilverShade", "BlueWhite"]},
-            {"txt": "允许他摸两下，是恩赐", "targets": ["Calico", "Chinchilla", "SilverShade"]}
+            {"txt": "会动的小玩意儿（逗猫棒、激光笔、小飞虫）", "targets": GROUP_C},
+            {"txt": "能咬能抓的（猫抓板、磨牙棒、毛线球）", "targets": GROUP_A},
+            {"txt": "能抱着睡的（毛绒玩具、小毯子、软抱枕）", "targets": GROUP_B},
+            {"txt": "对玩具没兴趣，只喜欢跟 “人” 互动", "targets": GROUP_D}
         ]
     },
     {
-        "q": "在社交场合中，你通常是？",
+        "q": "你的吃饭风格是？",
         "options": [
-            {"txt": "全场焦点，社牛本牛", "targets": ["Cow", "DevonRex", "Orange", "Cheese"]},
-            {"txt": "只跟熟人聊，生人勿近", "targets": ["Calico", "DragonLi", "SilverShade"]},
-            {"txt": "温和倾听者，微笑回应", "targets": ["GoldenShade", "BlueCat", "Ragdoll"]},
-            {"txt": "游刃有余，照顾每个人", "targets": ["MaineCoon", "BlueWhite"]}
+            {"txt": "细嚼慢咽，每一口都慢慢品，不着急", "targets": GROUP_D},
+            {"txt": "狼吞虎咽，吃完还会盯着别人的碗", "targets": GROUP_D},
+            {"txt": "必须有人陪才吃，独自吃饭没胃口", "targets": GROUP_B},
+            {"txt": "重度挑食，只吃合口味的，不合口直接走", "targets": GROUP_A}
         ]
     },
     {
-        "q": "饭碗里的猫粮吃出了一个坑（中间空了），你会？",
+        "q": "你觉得自己的 “猫毛” 更像哪种质感？",
         "options": [
-            {"txt": "喵喵大叫，觉得已经没饭了", "targets": ["Orange", "BlueCat", "BlueWhite", "Ragdoll"]},
-            {"txt": "自己用爪子拨一下继续吃", "targets": ["DragonLi", "MaineCoon", "Jianzhou"]},
-            {"txt": "绝食抗议，必须倒满新的", "targets": ["Chinchilla", "SilverShade", "Calico"]},
-            {"txt": "无所谓，饿了再吃", "targets": ["GoldenShade", "Cheese", "Cow"]}
+            {"txt": "短而密，摸起来顺滑像绸缎", "targets": GROUP_A},
+            {"txt": "长而软，容易炸毛也容易打结", "targets": GROUP_B},
+            {"txt": "卷卷的 / 蓬蓬的，像个小绒球", "targets": GROUP_C},
+            {"txt": "薄而短，几乎不用打理，省心型", "targets": GROUP_D}
         ]
     },
     {
-        "q": "遇到困难和压力时，你会？",
+        "q": "你的 “猫眼睛” 给人的第一感觉是？",
         "options": [
-            {"txt": "找人撒娇求助，求抱抱", "targets": ["Ragdoll", "Sphynx", "Chinchilla"]},
-            {"txt": "自己死磕，绝不认输", "targets": ["DragonLi", "Jianzhou", "MaineCoon"]},
-            {"txt": "先吃顿好的，睡一觉再说", "targets": ["Orange", "GoldenShade", "BlueCat"]},
-            {"txt": "另辟蹊径，用奇怪招数", "targets": ["Cow", "DevonRex", "Cheese"]}
+            {"txt": "圆溜溜的，无辜又天真，惹人疼", "targets": GROUP_B},
+            {"txt": "细长的，高冷又神秘，有距离感", "targets": GROUP_A},
+            {"txt": "大大的，时刻充满好奇，亮晶晶", "targets": GROUP_C},
+            {"txt": "眯眯的，看起来永远没睡醒，佛系感拉满", "targets": GROUP_D}
         ]
     },
     {
-        "q": "主人正在用电脑工作，键盘发热，你会？",
+        "q": "给自己的 “猫界运动能力” 打个分，更贴近？",
         "options": [
-            {"txt": "果断趴在键盘上，挡住屏幕", "targets": ["Sphynx", "Ragdoll", "DevonRex", "Orange"]},
-            {"txt": "在旁边盯着屏幕上的鼠标指针", "targets": ["DragonLi", "Cow", "BlueWhite"]},
-            {"txt": "只要在同一个房间陪着就行", "targets": ["MaineCoon", "GoldenShade", "Cheese"]},
-            {"txt": "离远点，别打扰我睡觉", "targets": ["BlueCat", "SilverShade", "Chinchilla"]}
+            {"txt": "飞檐走壁，跳高跳远小能手，精力爆棚", "targets": GROUP_C},
+            {"txt": "灵活但不爱动，擅长蹲点 “伏击” 小目标", "targets": GROUP_A},
+            {"txt": "四肢短萌，跑不快但蹦跶起来超可爱", "targets": GROUP_D},
+            {"txt": "佛系躺平，能不动就不动，运动全靠本能", "targets": GROUP_D}
         ]
     },
     {
-        "q": "对于“粘人”这件事，你怎么看？",
+        "q": "面对陌生的 “同类（陌生人）”，你会？",
         "options": [
-            {"txt": "我是粘人精，分开难受", "targets": ["Sphynx", "Ragdoll", "DevonRex"]},
-            {"txt": "看心情，想理你才理你", "targets": ["Calico", "SilverShade", "BlueCat"]},
-            {"txt": "不需要太粘，有各自空间", "targets": ["DragonLi", "Jianzhou", "MaineCoon"]},
-            {"txt": "刚刚好，互相陪伴", "targets": ["GoldenShade", "Cheese", "BlueWhite"]}
+            {"txt": "完全无视，自顾自玩，懒得搭理", "targets": GROUP_D},
+            {"txt": "先哈气警告，保持距离，再判断是否友好", "targets": GROUP_A},
+            {"txt": "主动贴贴示好，想跟所有同类做朋友", "targets": GROUP_C},
+            {"txt": "看心情，心情好就凑上去，不好就扭头走", "targets": GROUP_A}
         ]
     },
     {
-        "q": "你的身材管理观念是？",
+        "q": "如果 “主人（重要的人）” 出门，你会？",
         "options": [
-            {"txt": "心宽体胖，能吃是福", "targets": ["Orange", "GoldenShade", "BlueCat"]},
-            {"txt": "天生丽质，无需刻意管理", "targets": ["Ragdoll", "Chinchilla", "BlueWhite"]},
-            {"txt": "精壮结实，充满力量感", "targets": ["DragonLi", "Jianzhou", "MaineCoon"]},
-            {"txt": "身材苗条/独特", "targets": ["Sphynx", "DevonRex", "Calico"]}
+            {"txt": "在家疯狂拆家，发泄被丢下的不满", "targets": GROUP_C},
+            {"txt": "守在门口乖乖等，直到对方回来", "targets": GROUP_B},
+            {"txt": "该吃吃该睡睡，完全不在意，自己玩得开心", "targets": GROUP_D},
+            {"txt": "到处找对方，发出委屈的叫声，黏人感拉满", "targets": GROUP_B}
         ]
     },
     {
-        "q": "如果你不想被抱，但主人非要抱你，你会？",
+        "q": "你觉得自己的 “猫生使命” 是？",
         "options": [
-            {"txt": "变成液体流走，拒绝得很委婉", "targets": ["SilverShade", "BlueWhite", "Chinchilla"]},
-            {"txt": "一脚蹬开，甚至想哈气", "targets": ["Calico", "DragonLi", "Jianzhou"]},
-            {"txt": "忍一会，然后找机会溜走", "targets": ["MaineCoon", "Cheese", "BlueCat"]},
-            {"txt": "既然反抗不了，那就享受吧", "targets": ["Ragdoll", "Orange", "GoldenShade"]}
+            {"txt": "做高冷王者，被仰望、被细心伺候", "targets": GROUP_A},
+            {"txt": "做贴心小棉袄，被宠爱、陪在主人身边", "targets": GROUP_B},
+            {"txt": "做聪明探险家，闯世界、搞点小乐趣", "targets": GROUP_C},
+            {"txt": "做摆烂大爷，被投喂、吃睡无忧就够了", "targets": GROUP_D}
         ]
     },
     {
-        "q": "你觉得自己像什么动物？",
+        "q": "面前有一碗小鱼干和一个超舒服的纸箱，你选？",
         "options": [
-            {"txt": "狗狗 (忠诚、热情)", "targets": ["MaineCoon", "DevonRex", "Sphynx"]},
-            {"txt": "老虎/狮子 (霸气、独立)", "targets": ["DragonLi", "Jianzhou", "Calico"]},
-            {"txt": "考拉/熊猫 (懒、可爱)", "targets": ["GoldenShade", "BlueCat", "Orange"]},
-            {"txt": "猴子/哈士奇 (皮、活泼)", "targets": ["Cow", "Cheese", "BlueWhite"]}
+            {"txt": "先吃光小鱼干，再蜷进纸箱睡大觉", "targets": GROUP_D},
+            {"txt": "先蜷进纸箱，小鱼干什么时候吃都一样", "targets": GROUP_D},
+            {"txt": "把小鱼干叼进纸箱，边吃边睡，两不误", "targets": GROUP_C},
+            {"txt": "对两者都没兴趣，扭头去找主人求贴贴", "targets": GROUP_B}
         ]
     },
     {
-        "q": "你对生活环境的要求？",
+        "q": "外面突然下大雨，你在户外，会躲在哪里？",
         "options": [
-            {"txt": "必须干净整洁，有洁癖", "targets": ["Chinchilla", "SilverShade", "Calico"]},
-            {"txt": "舒服就行，稍微乱点没事", "targets": ["Orange", "GoldenShade", "Cheese"]},
-            {"txt": "只要有张床，哪里都能睡", "targets": ["BlueCat", "Cow", "BlueWhite"]},
-            {"txt": "喜欢高处，视野要好", "targets": ["DragonLi", "MaineCoon", "Jianzhou"]}
+            {"txt": "车底下，隐蔽又挡风，安全感拉满", "targets": GROUP_A},
+            {"txt": "楼道口，既能躲雨，又能观察外面的雨景", "targets": GROUP_A},
+            {"txt": "直接冒雨跑回家，找主人求安慰、擦毛毛", "targets": GROUP_B},
+            {"txt": "随便找个小水坑踩踩，觉得下雨超好玩", "targets": GROUP_C}
         ]
     },
     {
-        "q": "看到一只虫子飞进了屋里，你的反应？",
+        "q": "主人给你买了新的猫爬架，你会？",
         "options": [
-            {"txt": "发出咯咯声，立刻捕猎", "targets": ["DragonLi", "Jianzhou", "DevonRex"]},
-            {"txt": "盯着看半天，最后懒得动", "targets": ["BlueCat", "GoldenShade", "SilverShade"]},
-            {"txt": "吓得躲起来", "targets": ["Ragdoll", "Chinchilla"]},
-            {"txt": "玩弄它，把它当玩具", "targets": ["Cow", "Sphynx", "Orange"]}
+            {"txt": "立刻爬上去占最高位，宣布这是自己的领地", "targets": GROUP_A},
+            {"txt": "小心翼翼绕着看一圈，确认安全再慢慢爬", "targets": GROUP_A},
+            {"txt": "拉着主人一起玩，让对方扶着自己爬", "targets": GROUP_B},
+            {"txt": "看了一眼，觉得不如沙发舒服，扭头躺平", "targets": GROUP_D}
         ]
     },
     {
-        "q": "被人误解时，你会？",
+        "q": "家里来了一只新的小奶猫，你会？",
         "options": [
-            {"txt": "极力辩解，必须说清楚", "targets": ["DevonRex", "Sphynx", "Cow"]},
-            {"txt": "懒得解释，爱咋咋地", "targets": ["DragonLi", "Calico", "SilverShade"]},
-            {"txt": "委屈巴巴，自己生闷气", "targets": ["Ragdoll", "Chinchilla", "BlueCat"]},
-            {"txt": "用行动证明自己", "targets": ["MaineCoon", "Jianzhou", "GoldenShade"]}
+            {"txt": "懒得搭理，离得远远的，不跟小屁孩玩", "targets": GROUP_A},
+            {"txt": "主动凑上去闻一闻，偶尔还会护着它", "targets": GROUP_B},
+            {"txt": "跟小奶猫疯玩，追着跑跳，一起拆家", "targets": GROUP_C},
+            {"txt": "觉得它抢了主人的关注，偷偷躲起来生闷气", "targets": GROUP_B}
         ]
     },
     {
-        "q": "你更喜欢哪种类型的伴侣？",
+        "q": "主人拿着逗猫棒跟你玩，你会？",
         "options": [
-            {"txt": "能照顾我的，宠我的", "targets": ["Ragdoll", "Chinchilla", "Sphynx"]},
-            {"txt": "势均力敌，能一起进步", "targets": ["DragonLi", "MaineCoon", "Jianzhou"]},
-            {"txt": "有趣的，能玩到一起的", "targets": ["Cow", "DevonRex", "Cheese"]},
-            {"txt": "情绪稳定，包容性强的", "targets": ["GoldenShade", "BlueCat", "SilverShade"]}
+            {"txt": "高冷观望，偶尔抬抬爪子，不主动出击", "targets": GROUP_A},
+            {"txt": "蹲点伏击，找准时机一跃而起，精准扑抓", "targets": GROUP_A},
+            {"txt": "蹦蹦跳跳追着跑，玩到气喘吁吁还不停", "targets": GROUP_C},
+            {"txt": "玩了两下就腻了，扭头去吃零食，懒得配合", "targets": GROUP_D}
         ]
     },
     {
-        "q": "最后一个问题，你最想要什么超能力？",
+        "q": "你不小心把主人的水杯碰倒了，会？",
         "options": [
-            {"txt": "读心术 (懂人心)", "targets": ["Ragdoll", "Calico", "SilverShade"]},
-            {"txt": "瞬间移动 (自由)", "targets": ["DragonLi", "Jianzhou", "Cow"]},
-            {"txt": "力大无穷/守护 (力量)", "targets": ["MaineCoon", "BlueCat"]},
-            {"txt": "吃不胖/无限金钱 (享受)", "targets": ["Orange", "GoldenShade", "Chinchilla"]}
+            {"txt": "立刻溜之大吉，躲起来直到主人消气", "targets": GROUP_C},
+            {"txt": "蹲在旁边低头认错，一副可怜兮兮的样子", "targets": GROUP_B},
+            {"txt": "用爪子扒拉水杯，觉得洒出来的水超好玩", "targets": GROUP_C},
+            {"txt": "无所谓，扭头躺平，反正主人会收拾", "targets": GROUP_D}
         ]
     }
 ]
@@ -373,6 +389,7 @@ if st.session_state.step == 0:
     st.caption("全网最火 · 灵魂品种测试 · 你的本能反应")
     
     st.image("https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800&q=80", use_column_width=True)
+    st.markdown("<div style='text-align:center; color:#888; margin-top:10px; font-size:14px'>每只猫的前世，都藏着你的性格底色与生存策略。<br>回答越凭直觉，结果越准，犹豫就会败北～</div>", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
     
     with st.container(border=True):
@@ -478,13 +495,13 @@ elif st.session_state.step == 2:
     top1_score = sorted_scores[0][1]
     top1_cat = CATS[top1_key]
     
-    # 升级算法：适应18道题的积分池
-    # 满分大概是10-14分。60基础分，每得1分加3.5%。
-    # 5分 -> 77.5%
-    # 8分 -> 88%
-    # 11分 -> 98.5%
-    match_percentage = min(99, 60 + top1_score * 3.5)
-    
+    # V12.0 优化算法：18题满分，更加科学
+    # 得分率 = score / 18
+    # 匹配度 = 55 (基础分) + 得分率 * 44 (加分项)
+    # 极值控制在 99%
+    match_percentage = min(99, 55 + (top1_score / 18) * 44 * 3) # *3 是为了修正稀释，保证只要命中核心倾向就能高分
+    match_percentage = min(99, max(60, match_percentage)) # 保底60分
+
     with st.container(border=True):
         st.markdown("<center style='color:#888; font-size:14px; letter-spacing: 2px;'>你的前世灵魂是</center>", unsafe_allow_html=True)
         st.markdown(f"<h2 style='text-align:center; color:#2c3e50; margin-top:5px; margin-bottom: 5px;'>{top1_cat['name']}</h2>", unsafe_allow_html=True)
@@ -504,7 +521,9 @@ elif st.session_state.step == 2:
         key = sorted_scores[i][0]
         score = sorted_scores[i][1]
         cat = CATS[key]
-        sub_match = min(90, 50 + score * 3.5)
+        sub_match = min(90, 50 + (score/18) * 44 * 3)
+        sub_match = max(40, sub_match)
+        
         with st.container(border=True):
             col_img, col_txt = st.columns([1, 2.5])
             with col_img:
