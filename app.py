@@ -1,4 +1,5 @@
 import streamlit as st
+import random
 
 # ================= 1. 基础配置 =================
 st.set_page_config(
@@ -97,12 +98,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ================= 3. 数据准备 =================
-# 将现有的15种猫映射到4大性格底色
-# A类(高冷王者): DragonLi(独立), MaineCoon(霸气), Jianzhou(强悍), Calico(傲娇), SilverShade(贵族)
-# B类(贴心黏人): Ragdoll(黏人), Sphynx(极度黏人), DevonRex(像狗)
-# C类(好奇探险): Cow(二哈), Cheese(美短), BlueWhite(好奇)
-# D类(摆烂大爷): Orange(胖), GoldenShade(稳), BlueCat(懒), Chinchilla(精致懒)
-
 CATS = {
     "Ragdoll": {
         "name": "布偶猫 (Ragdoll)",
@@ -196,7 +191,6 @@ CATS = {
     }
 }
 
-# 18道题目：基于四大维度 + 情景题
 # A -> 高冷王者 (Group A)
 # B -> 贴心黏人 (Group B)
 # C -> 好奇探险 (Group C)
@@ -483,6 +477,7 @@ elif st.session_state.step == 1:
 elif st.session_state.step == 2:
     st.balloons()
     
+    # 1. 统计得分
     final_scores = {k: 0 for k in CATS.keys()}
     for q_i, ans_i in st.session_state.answers.items():
         targets = QUESTIONS[q_i]['options'][ans_i]['targets']
@@ -490,22 +485,43 @@ elif st.session_state.step == 2:
             if cat_key in final_scores:
                 final_scores[cat_key] += 1
 
+    # 2. 排序
     sorted_scores = sorted(final_scores.items(), key=lambda x: x[1], reverse=True)
     top1_key = sorted_scores[0][0]
     top1_score = sorted_scores[0][1]
     top1_cat = CATS[top1_key]
     
-    # V12.0 优化算法：18题满分，更加科学
-    # 得分率 = score / 18
-    # 匹配度 = 55 (基础分) + 得分率 * 44 (加分项)
-    # 极值控制在 99%
-    match_percentage = min(99, 55 + (top1_score / 18) * 44 * 3) # *3 是为了修正稀释，保证只要命中核心倾向就能高分
-    match_percentage = min(99, max(60, match_percentage)) # 保底60分
+    # ================= 核心算法升级 V13.0 =================
+    
+    # A. 计算“性格纯度” (Dominance Rate)
+    # 你的选择中，命中该猫咪的比例是多少？
+    # 例如：18题里有12题都指向了这只猫，dominance = 12/18 = 0.66
+    dominance_rate = top1_score / 18.0
+    
+    # B. 基础契合度 (Base Match)
+    # 60分起步，每多一点纯度，分数越高。
+    # 满分(18/18) -> 60 + 50 = 110 (会被截断到99)
+    # 刚及格(5/18) -> 60 + 13.8 = 73.8% (合理的低分)
+    # 高分(12/18) -> 60 + 33.3 = 93.3% (合理的高分)
+    raw_percentage = 60 + (dominance_rate * 50)
+    
+    # C. 引入“微扰动” (Micro-Variance)
+    # 哪怕得分一样，根据你具体选了哪几个选项，产生一个微小的波动(-1.5% 到 +1.5%)
+    # 这样用户觉得“哇，我是93.5%，你是94.2%，好精确！”
+    answer_sum = sum(st.session_state.answers.values()) # 选项索引之和
+    variance = (answer_sum % 30) / 10.0 - 1.5 # 产生 -1.5 到 1.5 的随机数
+    
+    final_percentage = min(99.9, max(65.0, raw_percentage + variance))
+
+    # =======================================================
 
     with st.container(border=True):
         st.markdown("<center style='color:#888; font-size:14px; letter-spacing: 2px;'>你的前世灵魂是</center>", unsafe_allow_html=True)
         st.markdown(f"<h2 style='text-align:center; color:#2c3e50; margin-top:5px; margin-bottom: 5px;'>{top1_cat['name']}</h2>", unsafe_allow_html=True)
-        st.markdown(f"<div class='big-score'>{int(match_percentage)}%</div>", unsafe_allow_html=True)
+        
+        # 显示带一位小数的百分比，显得更专业
+        st.markdown(f"<div class='big-score'>{final_percentage:.1f}%</div>", unsafe_allow_html=True)
+        
         st.markdown("<div style='text-align:center; color:#a1c4fd; font-weight:bold; margin-bottom:20px;'>灵 魂 契 合 度</div>", unsafe_allow_html=True)
         st.image(top1_cat['img'], use_column_width=True)
         st.markdown(f"""
@@ -517,12 +533,16 @@ elif st.session_state.step == 2:
     
     st.markdown("### 🧩 你的其他性格切片")
     
+    # 显示第2-4名，分数也动态计算
     for i in range(1, 4):
         key = sorted_scores[i][0]
         score = sorted_scores[i][1]
         cat = CATS[key]
-        sub_match = min(90, 50 + (score/18) * 44 * 3)
-        sub_match = max(40, sub_match)
+        
+        # 次要性格的算法：基于得分比例，但也加一点波动
+        sub_dominance = score / 18.0
+        sub_match = 40 + (sub_dominance * 50) + variance
+        sub_match = min(90, max(20, sub_match)) # 限制在20%-90%之间
         
         with st.container(border=True):
             col_img, col_txt = st.columns([1, 2.5])
@@ -530,7 +550,7 @@ elif st.session_state.step == 2:
                 st.image(cat['img'], use_column_width=True)
             with col_txt:
                 st.markdown(f"**{cat['name']}**")
-                st.markdown(f"<div style='font-size:12px; color:#999; margin-bottom:5px;'>潜在契合度: {int(sub_match)}%</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='font-size:12px; color:#999; margin-bottom:5px;'>潜在契合度: {sub_match:.1f}%</div>", unsafe_allow_html=True)
                 st.markdown(f"<div style='font-size:12px; color:#666;'>{cat['tags'][0]} {cat['tags'][1]}</div>", unsafe_allow_html=True)
     
     st.markdown("<br>", unsafe_allow_html=True)
